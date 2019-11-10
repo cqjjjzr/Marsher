@@ -7,6 +7,7 @@
         xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:Tx="http://unclassified.software/source/txtranslation"
         xmlns:asf="clr-namespace:AirspaceFixer;assembly=AirspaceFixer"
         xmlns:local="clr-namespace:Marsher"
         mc:Ignorable="d"
@@ -17,16 +18,17 @@
         GlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded" d:DataContext="{d:DesignInstance local:MainViewModel}">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button x:Name="LoginCommand" Content="login service" Click="LoginCommand_Click">
+            <Button x:Name="LoginCommand" Content="{Tx:T ui.commands.login}" Click="LoginCommand_Click">
                 <Button.ContextMenu>
                     <ContextMenu x:Name="LoginContextMenu">
-                        <MenuItem x:Name="LoginToMarshmallowContextMenuItem" Header="Login to Marshmallow" Click="LoginToMarshmallowContextMenuItem_Click" />
+                        <MenuItem x:Name="LoginToMarshmallowContextMenuItem" Header="{Tx:T ui.commands.login.marshmallow}" Click="LoginToMarshmallowContextMenuItem_Click" />
+                        <MenuItem x:Name="LoginToPeingContextMenuItem" Header="{Tx:T ui.commands.login.peing}" Click="LoginToPeingContextMenuItem_Click" />
                         <Separator />
-                        <MenuItem x:Name="LogoutContextMenuItem" Header="Log out" Click="LogoutContextMenuItem_Click" />
+                        <MenuItem x:Name="LogoutContextMenuItem" Header="{Tx:T ui.commands.login.logout}" Click="LogoutContextMenuItem_Click" />
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
-            <Button x:Name="FetchCommand" Content="fetch" Click="FetchCommand_Click" />
+            <Button x:Name="FetchCommand" Content="{Tx:T ui.commands.fetch}" Click="FetchCommand_Click" />
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Controls:MetroWindow.Resources>
@@ -55,9 +57,9 @@
             <StatusBarItem Grid.Column="0">
                 <WrapPanel>
                     <iconPacks:PackIconMaterial Kind="{Binding Path=MarshmallowStatus}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    <TextBlock Text="Marshmallow" Margin="3,0" />
+                    <TextBlock Text="{Tx:T ui.status.marshmallow}" Margin="3,0" />
                     <iconPacks:PackIconMaterial Kind="{Binding Path=PeingStatus}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    <TextBlock Text="peing" Margin="3,0" />
+                    <TextBlock Text="{Tx:T ui.status.peing}" Margin="3,0" />
                 </WrapPanel>
             </StatusBarItem>
             <Separator Grid.Column="1" />
@@ -86,16 +88,16 @@
                               DisplayMemberPath="Name" ItemsSource="{StaticResource AllQaLists}"
                               SelectedIndex="0" SelectedItem="{Binding ActiveQaList}" />
                     <WrapPanel>
-                        <Button x:Name="ListCreateButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" Click="ListCreateButton_Click">
+                        <Button x:Name="ListCreateButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" Click="ListCreateButton_Click" ToolTip="{Tx:T ui.toolbar.new_list}">
                             <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="GreenYellow"/>
                         </Button>
-                        <Button x:Name="ListRemoveButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" IsEnabled="{Binding Path=ActiveQaListEditable}" Click="ListRemoveButton_Click">
+                        <Button x:Name="ListRemoveButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" IsEnabled="{Binding Path=ActiveQaListEditable}" Click="ListRemoveButton_Click" ToolTip="{Tx:T ui.toolbar.remove_list}">
                             <iconPacks:PackIconMaterial Kind="Minus" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Red"/>
                         </Button>
-                        <Button x:Name="ListRenameButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" IsEnabled="{Binding Path=ActiveQaListEditable}" Click="ListRenameButton_Click">
+                        <Button x:Name="ListRenameButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" IsEnabled="{Binding Path=ActiveQaListEditable}" Click="ListRenameButton_Click" ToolTip="{Tx:T ui.toolbar.rename_list}">
                             <iconPacks:PackIconMaterial Kind="Textbox" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
                         </Button>
-                        <Button x:Name="ListEditButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" IsEnabled="{Binding Path=ActiveQaListEditable}" Click="ListEditButton_Click">
+                        <Button x:Name="ListEditButton" Width="32" Height="32" Background="Transparent" BorderBrush="Transparent" IsEnabled="{Binding Path=ActiveQaListEditable}" Click="ListEditButton_Click" ToolTip="{Tx:T ui.toolbar.edit_list}">
                             <iconPacks:PackIconMaterial Kind="Pen" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
                         </Button>
                         <Grid
@@ -103,8 +105,10 @@
                             dd:DragDrop.DropHandler="{Binding}">
                             <Rectangle x:Name="RemoveRectangle" Stroke="#BF000000" Height="24" Width="150" StrokeThickness="1" StrokeDashArray="4 4" RadiusX="5" RadiusY="5"
                                        SnapsToDevicePixels="True" Fill="{Binding Path=RemoveRectBrush}" />
-                            <iconPacks:PackIconMaterial Kind="Delete" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,1,0,0" Foreground="#BF000000" Width="15" Height="15" />
-                            <Label Content="Drop here to remove" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,3,0" Foreground="#BF000000" FontSize="11.5"/>
+                            <DockPanel VerticalAlignment="Center" DockPanel.Dock="Right">
+                                <iconPacks:PackIconMaterial DockPanel.Dock="Left" Kind="Delete" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,1,0,0" Foreground="#BF000000" Width="15" Height="15" />
+                                <Label DockPanel.Dock="Right" Content="{Tx:T ui.toolbar.drag_to_remove}" Margin="0,0,3,0" Foreground="#BF000000" FontSize="11.5"/>
+                            </DockPanel>
                         </Grid>
 
                     </WrapPanel>
@@ -138,12 +142,12 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Margin="4">ID</Label>
+                    <Label Grid.Column="0" Grid.Row="0" Margin="4" Content="{Tx:T ui.item.id}" />
                     <TextBox x:Name="IDTextBox" Grid.Column="1" Grid.Row="0" Margin="4" IsReadOnly="True" Text="{Binding Id}"/>
-                    <Label Grid.Column="0" Grid.Row="1" Margin="4">Content</Label>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="4" Content="{Tx:T ui.item.content}" />
                     <TextBox x:Name="ContentTextBox" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding Content}" TextChanged="ContentTextBox_TextChanged" AcceptsReturn="True"/>
                 </Grid>
-                <Button x:Name="DisplayButton" Content="Display" Margin="10,7,10,10" Grid.Row="3"/>
+                <Button x:Name="DisplayButton" Content="{Tx:T ui.item.display}" Margin="10,7,10,10" Grid.Row="3"/>
             </Grid>
         </Grid>
     </DockPanel>

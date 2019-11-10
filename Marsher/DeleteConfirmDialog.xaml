@@ -5,17 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ControlsDialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Marsher"
+        xmlns:txLib="http://unclassified.software/source/txtranslation"
         mc:Ignorable="d"
-        Title="Deleting" Height="450" Width="800" Loaded="BaseMetroDialog_Loaded">
+        Title="{txLib:T dialog.header.confirm}" Height="450" Width="800" Loaded="BaseMetroDialog_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="PromptLabel">
-            Removing <Run Text="{Binding ItemsCount}"></Run> item(s) from the local storage and <Bold>ALL</Bold> lists, are you sure?
-        </TextBlock>
+        <TextBlock x:Name="PromptLabel" Text="{txLib:T dialog.remove_from_all, {Binding ItemsCount}}" />
         <ListView x:Name="ItemList" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=Items}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="local:QaItem">

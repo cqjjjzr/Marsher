@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using static Unclassified.TxLib.Tx;
 
 namespace Marsher
 {
@@ -18,7 +19,7 @@ namespace Marsher
             DataContext = _viewModel;
             listViewModel.Locked = true;
 
-            Title = $"Collector for {listViewModel.Name}";
+            Title = T("ui.collector", "name", listViewModel.Name);
         }
 
         private void MetroWindow_Closed(object sender, EventArgs e)
@@ -29,7 +30,7 @@ namespace Marsher
 
     public class CollectorViewModel
     {
-        public ObservableCollection<QaItem> ActiveQaItems { get; }
+        private ObservableCollection<QaItem> ActiveQaItems { get; }
         public QaListStubsViewModel StubsViewModel { get; }
 
         public CollectorViewModel(QaListStubsViewModel stubs)

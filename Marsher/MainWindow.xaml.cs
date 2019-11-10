@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +23,7 @@ using MahApps.Metro.IconPacks;
 using Marsher.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using static Unclassified.TxLib.Tx;
 
 namespace Marsher
 {
@@ -41,6 +43,8 @@ namespace Marsher
         private Task _currentTask = null;
         public MainWindow()
         {
+            LoadFromXmlFile("Resources/dictionary.txd");
+
             try
             {
                 IEHelper.EnsureBrowserEmulationEnabled(AppDomain.CurrentDomain.FriendlyName);
@@ -48,8 +52,8 @@ namespace Marsher
             catch (IeVersionTooOldException)
             {
                 MessageBox.Show(
-                    "You don't have Internet Explorer 11 installed on your system! Service login may not work.",
-                    "Warning",
+                    T("dialog.no_ie"),
+                    T("dialog.header.warning"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 System.Diagnostics.Process.Start("https://support.microsoft.com/en-us/help/18520/download-internet-explorer-11-offline-installer");
@@ -57,8 +61,9 @@ namespace Marsher
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Failed enabling Internet Explorer 11 for this application! Service login may not work. Additional information: {ex}",
-                    "Warning",
+                    T("dialog.ie_fail",
+                        "exception", ex.ToString()),
+                    T("dialog.header.warning"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
             }
@@ -78,8 +83,8 @@ namespace Marsher
                 {
                     _viewModel.UpdatePeingStatus(status);
                     if (status == ServiceStatus.Available)
-                        _viewModel.StatusText = "Peing service logged in.";
-                    else if (status == ServiceStatus.NotLoggedIn) _viewModel.StatusText = "Peing service dropped.";
+                        _viewModel.StatusText = T("status.logged_in.peing");
+                    else if (status == ServiceStatus.NotLoggedIn) _viewModel.StatusText = T("status.dropped.peing");
                 });
             _marshmallowService = new MarshmallowService();
             _marshmallowService.OnLoginStatusChanged += status =>
@@ -87,8 +92,8 @@ namespace Marsher
                 {
                     _viewModel.UpdateMarshmallowStatus(status);
                     if (status == ServiceStatus.Available)
-                        _viewModel.StatusText = "Marshmallow service logged in.";
-                    else if (status == ServiceStatus.NotLoggedIn) _viewModel.StatusText = "Marshmallow service dropped.";
+                        _viewModel.StatusText = T("status.logged_in.marshmallow");
+                    else if (status == ServiceStatus.NotLoggedIn) _viewModel.StatusText = T("status.dropped.marshmallow");
                 });
 
             _viewModel.PropertyChanged += (sender, args) =>
@@ -148,11 +153,11 @@ namespace Marsher
             try
             {
                 _displayCommunication.Start();
-                _viewModel.ServerStatusText = $"Display service running at http://localhost:{DisplayCommunication.DisplayWSPort}";
+                _viewModel.ServerStatusText = T("status.display.running", "port", DisplayCommunication.DisplayWSPort.ToString());
             }
             catch (Exception)
             {
-                _viewModel.ServerStatusText = "Display service couldn't be started.";
+                _viewModel.ServerStatusText = T("status.display.failed");
             }
 
             PreviewBrowser.NavigateToStream(File.Open("resources/index_preview.html", FileMode.Open, FileAccess.Read));
@@ -173,12 +178,28 @@ namespace Marsher
 
         private void LoginToMarshmallowContextMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            OpenLoginWindow(
+                "https://marshmallow-qa.com",
+                "https://marshmallow-qa.com/messages/personal",
+                T("ui.commands.login.marshmallow"), _marshmallowService);
+        }
+
+        private void LoginToPeingContextMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            OpenLoginWindow(
+                "https://peing.net/",
+                "https://peing.net/ja/stg",
+                T("ui.commands.login.peing"), _peingService);
+        }
+
+        private void OpenLoginWindow(string url, string cookieUrl, string title, Service service)
+        {
             var window = new ServiceLoginWindow();
-            window.Initialize(new Uri("https://marshmallow-qa.com"), new Uri("https://marshmallow-qa.com/messages/personal"), "Log in to Marshmallow");
+            window.Initialize(new Uri(url), new Uri(cookieUrl), title);
 
             window.ShowDialog();
             if (window.ResultContainer != null)
-                _marshmallowService.UpdateCookie(window.ResultContainer);
+                service.UpdateCookie(window.ResultContainer);
         }
 
         private void LogoutContextMenuItem_Click(object sender, RoutedEventArgs e)
@@ -197,7 +218,7 @@ namespace Marsher
             _viewModel.FixAirspace = true;
             do
             {
-                name = await this.ShowInputAsync("Rename", $"Enter new name for list {oldName}:",
+                name = await this.ShowInputAsync(T("dialog.header.rename"), T("dialog.rename_list", "oldName", oldName),
                     new MetroDialogSettings() { DefaultText = "" });
                 if (name == null) break;
                 try
@@ -207,19 +228,19 @@ namespace Marsher
                 }
                 catch (IllegalListNameException)
                 {
-                    await this.ShowMessageAsync("Error", $"Invalid list name ${name}!");
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.invalid_list_name", "name", name));
                     name = null;
                     list.Name = oldName;
                 }
                 catch (DuplicateListNameException)
                 {
-                    await this.ShowMessageAsync("Error", $"List {name} already exists!");
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.list_name_already_exists", "name", name));
                     name = null;
                     list.Name = oldName;
                 }
                 catch (Exception ex)
                 {
-                    await this.ShowMessageAsync("Error", $"Failed to rename list {name}! \nDetails:{ex}");
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.rename_failed", "name", name, "exception", ex.ToString()));
                 }
             } while (name == null);
 
@@ -234,14 +255,12 @@ namespace Marsher
 
             //this.ShowModalInputExternal()
             _viewModel.FixAirspace = true;
-            var result = await this.ShowMessageAsync("Confirm", $"Deleting list {list.Name}. Are you sure?",
+            var result = await this.ShowMessageAsync(T("dialog.header.confirm"), T("dialog.remove_confirm", "name", list.Name),
                 MessageDialogStyle.AffirmativeAndNegative);
             _viewModel.FixAirspace = false;
-            if (result == MessageDialogResult.Affirmative)
-            {
-                _localListPersistence.RemoveList(list);
-                QaListSelector.SelectedIndex = 0;
-            }
+            if (result != MessageDialogResult.Affirmative) return;
+            _localListPersistence.RemoveList(list);
+            QaListSelector.SelectedIndex = 0;
         }
 
         private async void ListCreateButton_Click(object sender, RoutedEventArgs e)
@@ -250,7 +269,7 @@ namespace Marsher
             _viewModel.FixAirspace = true;
             do
             {
-                name = await this.ShowInputAsync("New", $"Enter name of the new list:",
+                name = await this.ShowInputAsync(T("dialog.header.new"), T("dialog.create_list"),
                     new MetroDialogSettings {DefaultText = ""});
                 if (name == null) break;
                 try
@@ -259,17 +278,17 @@ namespace Marsher
                 }
                 catch (IllegalListNameException)
                 {
-                    await this.ShowMessageAsync("Error", $"Invalid list name ${name}!", MessageDialogStyle.Affirmative);
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.invalid_list_name", "name", name), MessageDialogStyle.Affirmative);
                     name = null;
                 }
                 catch (ArgumentException)
                 {
-                    await this.ShowMessageAsync("Error", $"List {name} already exists!", MessageDialogStyle.Affirmative);
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.list_name_already_exists", "name", name), MessageDialogStyle.Affirmative);
                     name = null;
                 }
                 catch (Exception ex)
                 {
-                    await this.ShowMessageAsync("Error", $"Failed to create list {name}! \nDetails:{ex}", MessageDialogStyle.Affirmative);
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.create_failed", "name", name, "exception", ex.ToString()), MessageDialogStyle.Affirmative);
                 }
             } while (name == null);
             _viewModel.FixAirspace = false;
@@ -319,11 +338,11 @@ namespace Marsher
             _viewModel.ProgressBarVisibility = Visibility.Visible;
             _currentTask = Task.Run(() =>
             {
-                UpdateStatusText("Fetching from Marshmallow service...");
-                FetchService("Marshmallow", _marshmallowService, out var marshmallowCount, out var marshmallowPageCount);
-                FetchService("peing", _peingService, out var peingCount, out var peingPageCount);
+                UpdateStatusText(T("status.fetching"));
+                FetchService(T("service.marshmallow"), _marshmallowService, out var marshmallowCount, out var marshmallowPageCount);
+                FetchService(T("service.peing"), _peingService, out var peingCount, out var peingPageCount);
 
-                UpdateStatusText($"Fetching completed. Fetched {marshmallowCount + peingCount} items from {marshmallowPageCount + peingPageCount} pages.");
+                UpdateStatusText(T("status.fetched", "items", (marshmallowCount + peingCount).ToString(), "pages", (marshmallowPageCount + peingPageCount).ToString()));
             });
             try
             {
@@ -331,7 +350,7 @@ namespace Marsher
             }
             catch (Exception exception)
             {
-                _viewModel.StatusText = "Failed to fetch questions! " + exception;
+                _viewModel.StatusText = T("status.fetch_failed", "exception", exception.ToString());
             }
             _viewModel.ProgressBarVisibility = Visibility.Collapsed;
         }
@@ -361,7 +380,10 @@ namespace Marsher
                 });
 
                 localPageCount++;
-                UpdateStatusText($"Fetched {localCount} item(s) from {localPageCount} page(s) from {displayName} service.");
+                UpdateStatusText(T("status.fetch_update",
+                    "items", localCount.ToString(),
+                    "pages", localPageCount.ToString(),
+                    "service", displayName));
                 _database.SaveChangesAsync();
                 return flag;
             });
@@ -444,7 +466,7 @@ namespace Marsher
             var localDbSet = dbContext.Items.Local.ToObservableCollection();
 
             AllQaItemsList = new QaListObservable()
-                {Name = "All received questions", Items = localDbSet };
+                {Name = T("ui.list_all"), Items = localDbSet };
             ActiveQaItems = localDbSet;
             AllQaItemsHolder.Add(AllQaItemsList);
             ActiveQaList = AllQaItemsList;
@@ -452,7 +474,7 @@ namespace Marsher
             _dialogCoordinator = dialogCoordinator;
         }
 
-        private string _serverStatusText = "Display service not running.";
+        private string _serverStatusText = T("status.display.not_running");
         public string ServerStatusText
         {
             get => _serverStatusText;

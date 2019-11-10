@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Marsher"
+        xmlns:Tx="http://unclassified.software/source/txtranslation"
         mc:Ignorable="d"
         Title="ServiceLoginWindow" Height="450" Width="800">
     <DockPanel LastChildFill="True">
-        <Button x:Name="FinishButton" DockPanel.Dock="Bottom" Height="30" Content="Finish logging in" Click="FinishButton_Click" />
+        <Button x:Name="FinishButton" DockPanel.Dock="Bottom" Height="30" Content="{Tx:T ui.login.finish}" Click="FinishButton_Click" />
         <WebBrowser x:Name="LoginBrowser" DockPanel.Dock="Top"></WebBrowser>
     </DockPanel>
 </Controls:MetroWindow>
