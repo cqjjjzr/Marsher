@@ -6,10 +6,11 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
+using System.Xml.XPath;
+using HtmlAgilityPack;
+using WebSocketSharp;
 
 namespace Marsher
 {
@@ -17,6 +18,8 @@ namespace Marsher
     {
         protected readonly string HttpAccept =
             "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3";
+
+        protected readonly string HttpAcceptEncoding = "UTF-8";
 
         protected readonly string HttpUserAgent =
             $"Marsher {Assembly.GetExecutingAssembly().GetName().Version}: a marshmallow client for livestreamers.";
@@ -27,7 +30,6 @@ namespace Marsher
         protected Service()
         {
             LoadCookie();
-            OnCookieUpdated();
         }
 
         public void UpdateCookie(CookieContainer container)
@@ -67,7 +69,7 @@ namespace Marsher
 
         protected HttpWebRequest CreateWebRequest(string uri)
         {
-            var request = (HttpWebRequest)WebRequest.Create("https://marshmallow-qa.com/messages/personal");
+            var request = (HttpWebRequest)WebRequest.Create(uri);
             request.UserAgent = HttpUserAgent;
             request.Accept = HttpAccept;
             request.CookieContainer = _container;
@@ -76,13 +78,31 @@ namespace Marsher
 
         protected void FireOnLoginStatusChanged(ServiceStatus status)
         {
-            OnLoginStatusChanged?.Invoke(status);
+            OnLoginStatusChanged?.Invoke(this, status);
+        }
+
+        protected void CheckLoginStatusAndFailOnRedirect(string url)
+        {
+            var request = CreateWebRequest(url);
+            request.AllowAutoRedirect = false;
+            request.GetResponseAsync().ContinueWith(task =>
+            {
+                if (task.IsFaulted) FireOnLoginStatusChanged(ServiceStatus.Error);
+                else
+                {
+                    var resp = (HttpWebResponse)task.Result;
+                    if (resp.StatusCode != HttpStatusCode.OK)
+                        FireOnLoginStatusChanged(ServiceStatus.NotLoggedIn);
+                    else
+                        FireOnLoginStatusChanged(ServiceStatus.Available);
+                }
+            });
         }
 
         protected abstract void OnCookieUpdated();
         public abstract void Fetch(Func<IEnumerable<QaItem>, bool> update);
 
-        public event Action<ServiceStatus> OnLoginStatusChanged;
+        public event Action<Service, ServiceStatus> OnLoginStatusChanged;
     }
 
     public enum ServiceStatus
@@ -92,39 +112,68 @@ namespace Marsher
 
     public class MarshmallowService : Service
     {
+        private readonly XPathExpression _findAllMarshmallowsExpression
+            = XPathExpression.Compile("//li[contains(@class, 'list-group-item') and not(@id='sample-message') and not(contains(@class, 'tip'))]//a[contains(@data-target, 'message.content')]");
+        private readonly XPathExpression _findLoadNextPageExpression = XPathExpression.Compile("//a[contains(@class, 'load-more')]");
+        private readonly Regex _extractIdRegex = new Regex("/messages/([a-zA-Z0-9\\-]+)");
+
         protected override void OnCookieUpdated()
         {
-            var request = CreateWebRequest("https://marshmallow-qa.com/messages/personal");
-            request.AllowAutoRedirect = false;
-            request.GetResponseAsync().ContinueWith(task =>
-            {
-                if (task.IsFaulted) FireOnLoginStatusChanged(ServiceStatus.Error);
-                else
-                {
-                    var resp = (HttpWebResponse)task.Result;
-                    if (resp.StatusCode == HttpStatusCode.Moved ||
-                        resp.StatusCode == HttpStatusCode.MovedPermanently)
-                        FireOnLoginStatusChanged(ServiceStatus.NotLoggedIn);
-                    FireOnLoginStatusChanged(ServiceStatus.Available);
-                }
-            });
+            CheckLoginStatusAndFailOnRedirect("https://marshmallow-qa.com/messages/personal");
         }
 
         public override void Fetch(Func<IEnumerable<QaItem>, bool> update)
         {
-            for (int i = 0; i < 10; i++)
+            var nextUri = "https://marshmallow-qa.com/messages/personal";
+            while (true)
             {
-                Thread.Sleep(1000);
-                var l = new List<QaItem>();
-                for (int j = 0; j < 10; j++)
+                var req = CreateWebRequest(nextUri);
+                req.AllowAutoRedirect = false;
+                try
                 {
-                    l.Add(new QaItem()
+                    var resp = (HttpWebResponse) req.GetResponse();
+                    if (resp.StatusCode != HttpStatusCode.OK)
                     {
-                        Content = Guid.NewGuid().ToString(), Id = Guid.NewGuid().ToString(), Service = QaService.Marshmallow
-                    });
-                }
+                        FireOnLoginStatusChanged(ServiceStatus.NotLoggedIn);
+                        break;
+                    }
 
-                if (!update(l)) break;
+                    Encoding encoding;
+                    try
+                    {
+                        encoding = Encoding.GetEncoding(resp.ContentEncoding);
+                    }
+                    catch (ArgumentException)
+                    {
+                        encoding = Encoding.UTF8;
+                    }
+                    var doc = new HtmlDocument();
+                    doc.Load(resp.GetResponseStream(), encoding);
+
+                    var nodes = doc.DocumentNode.SelectNodes(_findAllMarshmallowsExpression);
+                    var items = (
+                        from node in nodes
+                        let href = node.GetAttributeValue("href", "null")
+                        where !node.InnerText.IsNullOrEmpty() && href != "null"
+                        let idMatch = _extractIdRegex.Match(href)
+                        where idMatch.Success
+                        let id = idMatch.Groups[1].Captures[0].Value
+                        select new QaItem {Id = id, Content = node.InnerText, Service = QaService.Marshmallow}).ToList();
+
+                    if (!update(items)) break;
+
+                    var nextPageNodes = doc.DocumentNode.SelectNodes(_findLoadNextPageExpression);
+                    if (nextPageNodes == null || nextPageNodes.Count == 0) break;
+                    var nextPageNode = nextPageNodes[0];
+                    var nextUriRelative = nextPageNode.GetAttributeValue("href", "null");
+                    if (nextUriRelative == "null") return;
+                    nextUri = "https://marshmallow-qa.com" + nextUriRelative;
+                }
+                catch (Exception)
+                {
+                    FireOnLoginStatusChanged(ServiceStatus.Error);
+                    break;
+                }
             }
             SaveCookie();
         }
@@ -134,7 +183,7 @@ namespace Marsher
     {
         protected override void OnCookieUpdated()
         {
-            //throw new NotImplementedException();
+            CheckLoginStatusAndFailOnRedirect("https://peing.net/ja/stg");
         }
 
         public override void Fetch(Func<IEnumerable<QaItem>, bool> update)

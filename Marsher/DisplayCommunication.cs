@@ -13,6 +13,7 @@ namespace Marsher
         public const int DisplayWSPort = 19100;
 
         private readonly HttpServer _wsServer;
+        internal string _lastMessage = "";
 
         public DisplayCommunication()
         {
@@ -28,7 +29,7 @@ namespace Marsher
                     path = path.Substring(1);
                 if (path == "/")
                     path += "index.html";
-                path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), path));
+                path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "resources", path));
                 if (!path.StartsWith(Directory.GetCurrentDirectory()))
                 {
                     res.StatusCode = (int)HttpStatusCode.NotFound;
@@ -71,6 +72,7 @@ namespace Marsher
         public void UpdateText(string text, Action onCompleted)
         {
             _wsServer.WebSocketServices.BroadcastAsync(text, onCompleted);
+            _lastMessage = text;
         }
 
         public event Action OnConnected;
@@ -101,15 +103,11 @@ namespace Marsher
             _comm = comm;
         }
 
-        protected override void OnMessage(MessageEventArgs e)
-        {
-            base.OnMessage(e);
-        }
-
         protected override void OnOpen()
         {
             base.OnOpen();
             _comm.FireConnected();
+            SendAsync(_comm._lastMessage, (b => { }));
         }
 
         protected override void OnClose(CloseEventArgs e)

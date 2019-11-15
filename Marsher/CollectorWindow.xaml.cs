@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using Marsher.Annotations;
 using static Unclassified.TxLib.Tx;
 
 namespace Marsher
@@ -13,10 +18,10 @@ namespace Marsher
 
         public CollectorWindow(QaListStubsViewModel listViewModel)
         {
-            InitializeComponent();
-
             _viewModel = new CollectorViewModel(listViewModel);
             DataContext = _viewModel;
+            InitializeComponent();
+
             listViewModel.Locked = true;
 
             Title = T("ui.collector", "name", listViewModel.Name);
@@ -28,15 +33,42 @@ namespace Marsher
         }
     }
 
-    public class CollectorViewModel
+    public class CollectorViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<QaItem> ActiveQaItems { get; }
+        public ObservableCollection<QaItem> ActiveQaItems { get; }
         public QaListStubsViewModel StubsViewModel { get; }
 
         public CollectorViewModel(QaListStubsViewModel stubs)
         {
             StubsViewModel = stubs;
             ActiveQaItems = stubs.PopulatedItems;
+
+            WeakEventManager<ObservableCollection<QaItem>, NotifyCollectionChangedEventArgs>.AddHandler(ActiveQaItems, "CollectionChanged",
+                (sender, args) =>
+                {
+                    EmptyListIndicatorVisibility = ActiveQaItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+                });
+            EmptyListIndicatorVisibility = ActiveQaItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private Visibility _emptyListIndicatorVisibility = Visibility.Collapsed;
+
+        public Visibility EmptyListIndicatorVisibility
+        {
+            get => _emptyListIndicatorVisibility;
+            set
+            {
+                _emptyListIndicatorVisibility = value;
+                FireOnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void FireOnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

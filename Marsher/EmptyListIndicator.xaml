@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="Marsher.EmptyListIndicator"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:local="clr-namespace:Marsher"
+             mc:Ignorable="d"
+             d:DesignHeight="450" Width="250">
+    <Grid>
+        <Grid.Resources>
+            <SolidColorBrush x:Key="ForegroundBrush" Color="#FF7C7C7C" ></SolidColorBrush>
+        </Grid.Resources>
+        <Rectangle DockPanel.Dock="Bottom" Margin="12" StrokeThickness="3.5" StrokeDashArray="4 4" RadiusX="5" RadiusY="5"
+                   SnapsToDevicePixels="True" Stroke="{StaticResource ForegroundBrush}"></Rectangle>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image Width="96" Height="96">
+                <Image.Source>
+                    <DrawingImage>
+                        <DrawingImage.Drawing>
+                            <DrawingGroup ClipGeometry="M0,0 V1000 H1000 V0 H0 Z">
+                                <DrawingGroup Opacity="1">
+                                    <GeometryDrawing Brush="{StaticResource ForegroundBrush}" Geometry="F1 M1000,1000z M0,0z M476.7,647.6C473.5,646.5,469.9,647.6,467.9,650.3L410.2,725.6C406.8,730 401.5,732.6 395.9,732.6 392.8,732.6 389.7,731.8 387,730.2L122.8,579.5C120.4,578.1 117.3,578.1 114.9,579.5 112.5,580.9 111,583.5 111,586.3L111,703.9C111,706.7,112.5,709.3,115,710.8L470.2,916.3C471.4,917 472.8,917.4 474.2,917.4 475.6,917.4 476.9,917 478.2,916.3 480.6,914.9 482.2,912.3 482.2,909.4L482.2,655.1C482,651.7,479.9,648.7,476.7,647.6z" />
+                                    <GeometryDrawing Brush="{StaticResource ForegroundBrush}" Geometry="F1 M1000,1000z M0,0z M885.1,579.5C882.7,578.1,879.7,578.1,877.2,579.5L613,730.3C610.3,731.8 607.2,732.6 604.1,732.6 598.5,732.6 593.2,730 589.8,725.6L532.1,650.3C530,647.6 526.5,646.5 523.3,647.6 520.1,648.7 517.9,651.7 517.9,655.1L517.9,909.5C517.9,912.3 519.4,914.9 521.9,916.4 523.1,917.1 524.5,917.5 525.9,917.5 527.3,917.5 528.6,917.1 529.9,916.4L885.1,710.9C887.6,709.5,889.1,706.9,889.1,704L889.1,586.3C889,583.5,887.5,580.9,885.1,579.5z" />
+                                    <GeometryDrawing Brush="{StaticResource ForegroundBrush}" Geometry="F1 M1000,1000z M0,0z M989.9,257.9C989.5,255.3,987.8,253.1,985.5,252L627.9,83.4C625,82.1,621.6,82.5,619.3,84.6L517,175 503.7,167.9C501.4,166.7,498.6,166.7,496.3,167.9L483,175 380.8,84.6C378.4,82.5,375,82,372.2,83.4L14.5,252C12.1,253.1 10.5,255.3 10.1,257.9 9.7,260.5 10.5,263.1 12.4,264.9L119.1,368.1 102.3,377C101,377.7,99.9,378.8,99.1,380.1L41.1,482.5C39,486.3,40.3,491.1,44.1,493.3L385.1,688C388.5,690,392.9,689.1,395.3,685.9L467.4,591.8C468.8,590 469.3,587.6 468.9,585.4 468.4,583.1 467,581.2 465,580.1L126.4,393.4 487.1,202 487.1,437.3 398.6,488.6C396.1,490 394.6,492.7 394.6,495.5 394.6,498.4 396.2,501 398.7,502.4L496.1,556.1C498.5,557.4,501.4,557.4,503.8,556.1L601.3,502.4C603.8,501 605.4,498.4 605.4,495.5 605.4,492.6 603.9,490 601.4,488.6L512.9,437.3 512.9,202 873.5,393.4 535,579.9C533,581 531.5,583 531.1,585.2 530.6,587.5 531.2,589.8 532.6,591.6L604.7,685.7C606.2,687.7 608.6,688.8 611,688.8 612.3,688.8 613.7,688.5 614.9,687.8L955.9,493.1C959.7,490.9,961,486.1,958.9,482.3L900.9,379.9C900.2,378.6,899.1,377.5,897.7,376.8L880.9,367.9 987.6,264.7C989.5,263.1,990.3,260.5,989.9,257.9z" />
+                                </DrawingGroup>
+                            </DrawingGroup>
+                        </DrawingImage.Drawing>
+                    </DrawingImage>
+                </Image.Source>
+            </Image>
+            <TextBlock FontSize="24" Text="{Binding PrimaryString, RelativeSource={RelativeSource AncestorType=UserControl}}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Center" TextAlignment="Center" />
+            <TextBlock FontSize="12" Text="{Binding SecondaryString, RelativeSource={RelativeSource AncestorType=UserControl}}" Foreground="{StaticResource ForegroundBrush}" HorizontalAlignment="Center" TextAlignment="Center" Width="150" TextWrapping="WrapWithOverflow" />
+        </StackPanel>
+    </Grid>
+</UserControl>

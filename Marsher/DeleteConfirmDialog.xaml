@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="PromptLabel" Text="{txLib:T dialog.remove_from_all, {Binding ItemsCount}}" />
+        <TextBlock x:Name="PromptLabel" Text="" />
         <ListView x:Name="ItemList" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemsSource="{Binding Path=Items}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="local:QaItem">
@@ -29,8 +29,8 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="OKButton" Grid.Column="1" HorizontalAlignment="Right" Content="OK" Width="72" Margin="12" Style="{StaticResource AccentedSquareButtonStyle}" />
-            <Button x:Name="CancelButton" Grid.Column="2" HorizontalAlignment="Right" Content="cancel" Width="72" Margin="12" />
+            <Button x:Name="OKButton" Grid.Column="1" HorizontalAlignment="Right" Content="{txLib:T dialog.ok}" Width="72" Margin="12" Style="{StaticResource AccentedSquareButtonStyle}" />
+            <Button x:Name="CancelButton" Grid.Column="2" HorizontalAlignment="Right" Content="{txLib:T dialog.cancel}" Width="72" Margin="12" />
         </Grid>
     </Grid>
 </ControlsDialog:CustomDialog>

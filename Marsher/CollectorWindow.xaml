@@ -6,7 +6,14 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Marsher"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:txLib="http://unclassified.software/source/txtranslation"
         mc:Ignorable="d"
         Title="CollectorWindow" Height="450" Width="250" d:DataContext="{d:DesignData Type=CollectorViewModel}" Closed="MetroWindow_Closed">
-    <local:QaListView x:Uid="QaList" x:Name="QaList" Margin="0" ItemsSource="{Binding ActiveQaItems}" />
+    <Grid>
+        <local:QaListView x:Uid="QaList" x:Name="QaList" Margin="0" ItemsSource="{Binding ActiveQaItems}">
+        </local:QaListView>
+        <local:EmptyListIndicator PrimaryString="{txLib:T ui.list.empty}" SecondaryString="{txLib:T ui.list.empty_list}"
+                                  IsHitTestVisible="False"
+                                  Width="Auto" Panel.ZIndex="1" Visibility="{Binding EmptyListIndicatorVisibility}"/>
+    </Grid>
 </Controls:MetroWindow>

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,13 +15,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GongSolutions.Wpf.DragDrop;
-using GongSolutions.Wpf.DragDrop.Utilities;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Marsher.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using static Unclassified.TxLib.Tx;
 
 namespace Marsher
@@ -78,18 +75,20 @@ namespace Marsher
             QaListSelector.SelectedIndex = 0;
             //QaList.ItemsSource = _viewModel.ActiveQaList;
             _peingService = new PeingService();
-            _peingService.OnLoginStatusChanged += status =>
+            _peingService.OnLoginStatusChanged += (sender, status) =>
                 Dispatcher?.Invoke(() =>
                 {
+                    if (sender != _peingService) return;
                     _viewModel.UpdatePeingStatus(status);
                     if (status == ServiceStatus.Available)
                         _viewModel.StatusText = T("status.logged_in.peing");
                     else if (status == ServiceStatus.NotLoggedIn) _viewModel.StatusText = T("status.dropped.peing");
                 });
             _marshmallowService = new MarshmallowService();
-            _marshmallowService.OnLoginStatusChanged += status =>
+            _marshmallowService.OnLoginStatusChanged += (sender, status) =>
                 Dispatcher?.Invoke(() =>
                 {
+                    if (sender != _marshmallowService) return;
                     _viewModel.UpdateMarshmallowStatus(status);
                     if (status == ServiceStatus.Available)
                         _viewModel.StatusText = T("status.logged_in.marshmallow");
@@ -207,6 +206,16 @@ namespace Marsher
             _marshmallowService.ClearCookie();
         }
 
+        private MetroDialogSettings CreateMetroDialogSettings()
+        {
+            return new MetroDialogSettings()
+            {
+                DefaultText = "",
+                AffirmativeButtonText = T("dialog.ok"),
+                NegativeButtonText = T("dialog.cancel")
+            };
+        }
+
         #region List Operations
         private async void ListRenameButton_Click(object sender, RoutedEventArgs e)
         {
@@ -218,8 +227,7 @@ namespace Marsher
             _viewModel.FixAirspace = true;
             do
             {
-                name = await this.ShowInputAsync(T("dialog.header.rename"), T("dialog.rename_list", "oldName", oldName),
-                    new MetroDialogSettings() { DefaultText = "" });
+                name = await this.ShowInputAsync(T("dialog.header.rename"), T("dialog.rename_list", "oldName", oldName), CreateMetroDialogSettings());
                 if (name == null) break;
                 try
                 {
@@ -228,19 +236,19 @@ namespace Marsher
                 }
                 catch (IllegalListNameException)
                 {
-                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.invalid_list_name", "name", name));
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.invalid_list_name", "name", name), MessageDialogStyle.Affirmative, CreateMetroDialogSettings());
                     name = null;
                     list.Name = oldName;
                 }
                 catch (DuplicateListNameException)
                 {
-                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.list_name_already_exists", "name", name));
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.list_name_already_exists", "name", name), MessageDialogStyle.Affirmative, CreateMetroDialogSettings());
                     name = null;
                     list.Name = oldName;
                 }
                 catch (Exception ex)
                 {
-                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.rename_failed", "name", name, "exception", ex.ToString()));
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.rename_failed", "name", name, "exception", ex.ToString()), MessageDialogStyle.Affirmative, CreateMetroDialogSettings());
                 }
             } while (name == null);
 
@@ -255,8 +263,7 @@ namespace Marsher
 
             //this.ShowModalInputExternal()
             _viewModel.FixAirspace = true;
-            var result = await this.ShowMessageAsync(T("dialog.header.confirm"), T("dialog.remove_confirm", "name", list.Name),
-                MessageDialogStyle.AffirmativeAndNegative);
+            var result = await this.ShowMessageAsync(T("dialog.header.confirm"), T("dialog.remove_confirm", "name", list.Name), MessageDialogStyle.AffirmativeAndNegative, CreateMetroDialogSettings());
             _viewModel.FixAirspace = false;
             if (result != MessageDialogResult.Affirmative) return;
             _localListPersistence.RemoveList(list);
@@ -270,7 +277,7 @@ namespace Marsher
             do
             {
                 name = await this.ShowInputAsync(T("dialog.header.new"), T("dialog.create_list"),
-                    new MetroDialogSettings {DefaultText = ""});
+                    CreateMetroDialogSettings());
                 if (name == null) break;
                 try
                 {
@@ -278,17 +285,17 @@ namespace Marsher
                 }
                 catch (IllegalListNameException)
                 {
-                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.invalid_list_name", "name", name), MessageDialogStyle.Affirmative);
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.invalid_list_name", "name", name), MessageDialogStyle.Affirmative, CreateMetroDialogSettings());
                     name = null;
                 }
                 catch (ArgumentException)
                 {
-                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.list_name_already_exists", "name", name), MessageDialogStyle.Affirmative);
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.list_name_already_exists", "name", name), MessageDialogStyle.Affirmative, CreateMetroDialogSettings());
                     name = null;
                 }
                 catch (Exception ex)
                 {
-                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.create_failed", "name", name, "exception", ex.ToString()), MessageDialogStyle.Affirmative);
+                    await this.ShowMessageAsync(T("dialog.header.error"), T("dialog.create_failed", "name", name, "exception", ex.ToString()), MessageDialogStyle.Affirmative, CreateMetroDialogSettings());
                 }
             } while (name == null);
             _viewModel.FixAirspace = false;
@@ -328,7 +335,14 @@ namespace Marsher
         private void ContentTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             dynamic document = PreviewBrowser.Document;
-            document.getElementById("text").innerText = _viewModel.ActiveQaItem?.Content ?? "";
+            document.getElementById("text").innerText = ContentTextBox.Text;
+
+            if (_viewModel.ActiveQaItem == null) return;
+            using (var transaction = _database.Database.BeginTransaction())
+            {
+                _database.Items.Update(_viewModel.ActiveQaItem);
+                transaction.Commit();
+            }
         }
 
         private async void FetchCommand_Click(object sender, RoutedEventArgs e)
@@ -359,41 +373,63 @@ namespace Marsher
         {
             var localCount = 0;
             var localPageCount = 0;
+            var allFetchedItems = new List<QaItem>();
             service.Fetch(items =>
             {
                 var flag = true;
-                var itemsList = items.ToList();
-                Dispatcher.Invoke(() =>
-                {
-                    using (var transaction = _database.Database.BeginTransaction())
+                foreach (var qaItem in items)
+                    if (_database.Items.Find(qaItem.Id) != null) flag = false;
+                    else
                     {
-                        foreach (var qaItem in itemsList)
-                            if (_database.Items.Find(qaItem.Id) != null) flag = false;
-                            else
-                            {
-                                _database.Items.Add(qaItem);
-                                localCount++;
-                            }
-
-                        transaction.Commit();
+                        allFetchedItems.Add(qaItem);
+                        localCount++;
                     }
-                });
-
                 localPageCount++;
                 UpdateStatusText(T("status.fetch_update",
                     "items", localCount.ToString(),
                     "pages", localPageCount.ToString(),
                     "service", displayName));
-                _database.SaveChangesAsync();
                 return flag;
             });
             count = localCount;
             pageCount = localPageCount;
+
+            allFetchedItems.Reverse();
+            Dispatcher?.Invoke(() =>
+            {
+                using (var transaction = _database.Database.BeginTransaction())
+                {
+                    _database.Items.AddRange(allFetchedItems);
+                    transaction.Commit();
+                }
+                _database.SaveChangesAsync();
+            });
         }
 
         private void UpdateStatusText(string text)
         {
             Dispatcher?.InvokeAsync(() => _viewModel.StatusText = text);
+        }
+
+        private void DisplayButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_viewModel.ActiveQaItem != null)
+                    _displayCommunication.UpdateText(_viewModel.ActiveQaItem.Content, () =>
+                    {
+                        UpdateStatusText(T("status.display_updated"));
+                    });
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        private void MetroWindow_Closing(object sender, CancelEventArgs e)
+        {
+            _database.SaveChanges();
         }
     }
 
@@ -418,7 +454,12 @@ namespace Marsher
             get => _activeQaItems;
             set
             {
+                if (_activeQaItems != null)
+                    _activeQaItems.CollectionChanged -= OnActiveListModified;
                 _activeQaItems = value;
+
+                UpdateEmptyListIndicator();
+                _activeQaItems.CollectionChanged += OnActiveListModified;
                 FireOnPropertyChanged();
             }
         }
@@ -433,6 +474,11 @@ namespace Marsher
                 FireOnPropertyChanged();
                 UpdateActiveListEditable();
             }
+        }
+
+        private void OnActiveListModified(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            UpdateEmptyListIndicator();
         }
 
         private bool _activeQaListEditable = false;
@@ -496,7 +542,41 @@ namespace Marsher
             }
         }
 
+        private string _emptyListIndicatorText = "";
+        public string EmptyListIndicatorText
+        {
+            get => _emptyListIndicatorText;
+            set
+            {
+                _emptyListIndicatorText = value;
+                FireOnPropertyChanged();
+            }
+        }
+
+        private Visibility _emptyListIndicatorVisibility = Visibility.Collapsed;
         private Visibility _progressBarVisibility = Visibility.Collapsed;
+
+        public Visibility EmptyListIndicatorVisibility
+        {
+            get => _emptyListIndicatorVisibility;
+            set
+            {
+                _emptyListIndicatorVisibility = value;
+                FireOnPropertyChanged();
+            }
+        }
+
+        private void UpdateEmptyListIndicator()
+        {
+            if (_activeQaItems.Count != 0)
+            {
+                EmptyListIndicatorVisibility = Visibility.Collapsed;
+                return;
+            }
+
+            EmptyListIndicatorText = T(ReferenceEquals(_activeList, AllQaItemsList) ? "ui.list.empty_all" : "ui.list.empty_list");
+            EmptyListIndicatorVisibility = Visibility.Visible;
+        }
 
         public Visibility ProgressBarVisibility
         {
@@ -548,7 +628,7 @@ namespace Marsher
                                    && (!(_activeList is QaListStubsViewModel) || !((QaListStubsViewModel)_activeList).Locked);
         }
 
-#region Drop and Delete Support
+        #region Drop and Delete Support
 
         public void DragOver(IDropInfo dropInfo)
         {

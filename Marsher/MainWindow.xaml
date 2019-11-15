@@ -15,7 +15,7 @@
         Title="Marsher" Height="530" Width="800"
 
         Dialog:DialogParticipation.Register="{Binding}"
-        GlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded" d:DataContext="{d:DesignInstance local:MainViewModel}">
+        GlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded" d:DataContext="{d:DesignInstance local:MainViewModel}" Closing="MetroWindow_Closing">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button x:Name="LoginCommand" Content="{Tx:T ui.commands.login}" Click="LoginCommand_Click">
@@ -104,16 +104,22 @@
                             dd:DragDrop.IsDropTarget="True"
                             dd:DragDrop.DropHandler="{Binding}">
                             <Rectangle x:Name="RemoveRectangle" Stroke="#BF000000" Height="24" Width="150" StrokeThickness="1" StrokeDashArray="4 4" RadiusX="5" RadiusY="5"
-                                       SnapsToDevicePixels="True" Fill="{Binding Path=RemoveRectBrush}" />
+                                       SnapsToDevicePixels="True" />
                             <DockPanel VerticalAlignment="Center" DockPanel.Dock="Right">
                                 <iconPacks:PackIconMaterial DockPanel.Dock="Left" Kind="Delete" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,1,0,0" Foreground="#BF000000" Width="15" Height="15" />
-                                <Label DockPanel.Dock="Right" Content="{Tx:T ui.toolbar.drag_to_remove}" Margin="0,0,3,0" Foreground="#BF000000" FontSize="11.5"/>
+                                <TextBlock DockPanel.Dock="Right" Text="{Tx:T ui.toolbar.drag_to_remove}" Margin="0,0,3,0" Foreground="#BF000000" FontSize="11.5" TextAlignment="Center"/>
                             </DockPanel>
                         </Grid>
 
                     </WrapPanel>
                 </StackPanel>
-                <local:QaListView x:Name="QaList" Margin="0" ItemsSource="{Binding ActiveQaItems}" DockPanel.Dock="Bottom" AllowDropExtended="{Binding Path=ActiveQaListEditable}" SelectedItem="{Binding ActiveQaItem, Mode=OneWayToSource}" />
+                <Grid>
+                    <local:QaListView x:Name="QaList" Margin="0" ItemsSource="{Binding ActiveQaItems}" DockPanel.Dock="Bottom"
+                                      AllowDropExtended="{Binding Path=ActiveQaListEditable}" SelectedItem="{Binding ActiveQaItem, Mode=OneWayToSource}"  />
+                    <local:EmptyListIndicator PrimaryString="{Tx:T ui.list.empty}" SecondaryString="{Binding EmptyListIndicatorText}" IsHitTestVisible="False"
+                                              Width="Auto" Panel.ZIndex="1" Visibility="{Binding EmptyListIndicatorVisibility}"/>
+                </Grid>
+
             </DockPanel>
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
@@ -122,7 +128,7 @@
                     <RowDefinition />
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
-                <GroupBox Header="Preview" VerticalAlignment="Stretch" Margin="10,10,10,10" HorizontalAlignment="Stretch" Grid.Row="0">
+                <GroupBox Header="{Tx:T ui.preview}" VerticalAlignment="Stretch" Margin="10,10,10,10" HorizontalAlignment="Stretch" Grid.Row="0">
                     <asf:AirspacePanel FixAirspace="{Binding FixAirspace}">
                         <WebBrowser x:Name="PreviewBrowser" />
                     </asf:AirspacePanel>
@@ -147,7 +153,7 @@
                     <Label Grid.Column="0" Grid.Row="1" Margin="4" Content="{Tx:T ui.item.content}" />
                     <TextBox x:Name="ContentTextBox" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding Content}" TextChanged="ContentTextBox_TextChanged" AcceptsReturn="True"/>
                 </Grid>
-                <Button x:Name="DisplayButton" Content="{Tx:T ui.item.display}" Margin="10,7,10,10" Grid.Row="3"/>
+                <Button x:Name="DisplayButton" Content="{Tx:T ui.item.display}" Margin="10,7,10,10" Grid.Row="3" Click="DisplayButton_Click"/>
             </Grid>
         </Grid>
     </DockPanel>
