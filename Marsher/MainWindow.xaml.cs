@@ -10,7 +10,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -37,6 +39,7 @@ namespace Marsher
         private LocalListPersistence _localListPersistence;
         private readonly DisplayCommunication _displayCommunication;
 
+        private DelayAction _saveDatabaseAction = new DelayAction();
         private Task _currentTask = null;
         public MainWindow()
         {
@@ -159,7 +162,8 @@ namespace Marsher
                 _viewModel.ServerStatusText = T("status.display.failed");
             }
 
-            PreviewBrowser.NavigateToStream(File.Open("resources/index_preview.html", FileMode.Open, FileAccess.Read));
+            if (File.Exists("resources/index_preview.html"))
+                PreviewBrowser.NavigateToStream(File.Open("resources/index_preview.html", FileMode.Open, FileAccess.Read));
         }
 
         private void LoginCommand_Click(object sender, RoutedEventArgs e)
@@ -343,6 +347,7 @@ namespace Marsher
                 _database.Items.Update(_viewModel.ActiveQaItem);
                 transaction.Commit();
             }
+            _saveDatabaseAction.Debounce(2000, null, () => _database.SaveChanges());
         }
 
         private async void FetchCommand_Click(object sender, RoutedEventArgs e)
