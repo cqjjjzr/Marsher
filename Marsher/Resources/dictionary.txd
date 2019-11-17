@@ -50,7 +50,7 @@ Details:{exception}</text>
 		<text key="ui.list.empty_list" comment="注意“所有收到的提问”的翻译需要与ui.list_all对应。">No questions in list. Please drag and drop some questions to the list.</text>
 		<text key="ui.list_all">All received questions</text>
 		<text key="ui.login.finish" comment="登录窗口下方按钮">Finish logging in</text>
-		<text key="ui.preview">PREVIEW (buggy)</text>
+		<text key="ui.preview">PREVIEW</text>
 		<text key="ui.status.marshmallow" comment="左下角状态栏标注的服务名">Marshmallow</text>
 		<text key="ui.status.peing" comment="左下角状态栏标注的服务名">peing</text>
 		<text key="ui.toolbar.drag_to_remove">Drop here to remove</text>
@@ -108,7 +108,7 @@ Details:{exception}</text>
 		<text key="ui.list.empty_list" acceptpunctuation="true">列表中没有提问，请从“所有收到的提问”中拖拽一些问题到列表中。</text>
 		<text key="ui.list_all">所有收到的提问</text>
 		<text key="ui.login.finish">我登录好了</text>
-		<text key="ui.preview">预览 (有bug)</text>
+		<text key="ui.preview">预览</text>
 		<text key="ui.status.marshmallow">Marshmallow</text>
 		<text key="ui.status.peing">peing</text>
 		<text key="ui.toolbar.drag_to_remove">拖放在此以删除</text>

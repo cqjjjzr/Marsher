@@ -17,14 +17,14 @@
     </ListView.Resources>
     <ListView.ItemTemplate>
         <DataTemplate x:Uid="DataTemplate_1">
-            <DockPanel x:Uid="DockPanel_1" Margin="8" Height="72">
-                <Image x:Uid="Image_1" DockPanel.Dock="Left" Height="48" Width="48"
+            <DockPanel x:Uid="DockPanel_1" Margin="8" Height="48">
+                <Image x:Uid="Image_1" DockPanel.Dock="Left" Height="36" Width="36"
                        Source="{Binding Service, Converter={StaticResource QaIconConverter}}" />
                 <DockPanel x:Uid="DockPanel_2" DockPanel.Dock="Right" LastChildFill="True">
                     <DockPanel x:Uid="DockPanel_3" DockPanel.Dock="Left">
-                        <TextBlock x:Uid="TextBlock_1" Text="{Binding Content}" FontSize="16" Margin="8,0,0,0"
-                                   TextTrimming="CharacterEllipsis" DockPanel.Dock="Top" />
-                        <TextBlock x:Uid="TextBlock_2" Text="{Binding Content}" FontSize="12" Margin="8,0,0,0"
+                        <!--<TextBlock x:Uid="TextBlock_1" Text="{Binding Content}" FontSize="16" Margin="16,0,0,0"
+                                   TextTrimming="CharacterEllipsis" DockPanel.Dock="Top" />-->
+                        <TextBlock x:Uid="TextBlock_2" Text="{Binding Content}" FontSize="16" Margin="16,0,0,0"
                                    TextTrimming="CharacterEllipsis" TextWrapping="Wrap" DockPanel.Dock="Bottom" />
                     </DockPanel>
                 </DockPanel>
