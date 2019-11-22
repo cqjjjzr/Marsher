@@ -1,0 +1,40 @@
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Squirrel;
+
+namespace Marsher
+{
+    public class MarsherUpdateManager : IDisposable
+    {
+        private const string UpdateUrlPath = "update_url.txt";
+        private const string DefaultUpdateUrl = "C:\\Users\\cqjjj\\source\\repos\\Marsher\\Releases";
+
+        private readonly string _updateUrl = DefaultUpdateUrl;
+        private readonly UpdateManager _mgr;
+        public MarsherUpdateManager()
+        {
+            var updateUrlPath = MarsherFilesystem.GetPath(UpdateUrlPath);
+            if (!File.Exists(updateUrlPath))
+                File.WriteAllText(updateUrlPath, DefaultUpdateUrl);
+            else
+                _updateUrl = File.ReadAllText(updateUrlPath);
+            _mgr = new UpdateManager(_updateUrl);
+        }
+
+        public void CheckUpdate()
+        {
+            _mgr.UpdateApp();
+        }
+
+        public string GetCurrentVersion()
+        {
+            return _mgr.CurrentlyInstalledVersion()?.ToString() ?? Assembly.GetCallingAssembly().GetName().Version.ToString();
+        }
+
+        public void Dispose()
+        {
+            _mgr.Dispose();
+        }
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 using WebSocketSharp.Net;
 using WebSocketSharp.Server;
@@ -13,7 +14,7 @@ namespace Marsher
         public const int DisplayWSPort = 19100;
 
         private readonly HttpServer _wsServer;
-        internal string _lastMessage = "";
+        internal JObject _lastMessage = new JObject { ["type"] = (int) QaService.Marshmallow, ["text"] = "" };
 
         public DisplayCommunication()
         {
@@ -69,10 +70,11 @@ namespace Marsher
             _wsServer.Stop();
         }
 
-        public void UpdateText(string text, Action onCompleted)
+        public void UpdateText(QaItem item, Action onCompleted)
         {
-            _wsServer.WebSocketServices.BroadcastAsync(text, onCompleted);
-            _lastMessage = text;
+            var txtObj = new JObject {["type"] = (int) item.Service, ["text"] = item.Content};
+            _wsServer.WebSocketServices.BroadcastAsync(txtObj.ToString(), onCompleted);
+            _lastMessage = txtObj;
         }
 
         public event Action OnConnected;
@@ -107,7 +109,7 @@ namespace Marsher
         {
             base.OnOpen();
             _comm.FireConnected();
-            SendAsync(_comm._lastMessage, (b => { }));
+            SendAsync(_comm._lastMessage.ToString(), (b => { }));
         }
 
         protected override void OnClose(CloseEventArgs e)

@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Marsher
 {
     /// <summary>
     /// ServiceLoginWindow.xaml 的交互逻辑
     /// </summary>
+    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     public partial class ServiceLoginWindow
     {
         public CookieContainer ResultContainer = null;
@@ -22,15 +26,27 @@ namespace Marsher
 
         public void Initialize(Uri browserUri, Uri cookiesUri, string title)
         {
+            WinInetHelper.SuppressCookiePersist();
             LoginBrowser.Navigate(browserUri);
+            HideScriptErrors(LoginBrowser, true);
             _cookiesUri = cookiesUri;
             Title = title;
+        }
+
+        // taken from https://stackoverflow.com/questions/1298255/how-do-i-suppress-script-errors-when-using-the-wpf-webbrowser-control
+        private void HideScriptErrors(WebBrowser wb, bool hide)
+        {
+            var fiComWebBrowser = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (fiComWebBrowser == null) return;
+            var objComWebBrowser = fiComWebBrowser.GetValue(wb);
+            objComWebBrowser?.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { hide });
         }
 
         private void FinishButton_Click(object sender, RoutedEventArgs e)
         {
             ResultContainer = GetUriCookieContainer(_cookiesUri);
             LoginBrowser.Navigate("about:blank");
+            WinInetHelper.EndBrowserSession();
             Close();
         }
 
@@ -65,14 +81,6 @@ namespace Marsher
             cookies.SetCookies(uri, cookieData.ToString().Replace(';', ','));
             return cookies;
         }
-
-        [DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool InternetSetCookieEx(
-            string lpszUrlName,
-            string lpszCookieName,
-            string lpszCookieData,
-            uint dwFlags,
-            IntPtr dwReserved);
 
         [DllImport("wininet.dll", SetLastError = true)]
         private static extern bool InternetGetCookieEx(

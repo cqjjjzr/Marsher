@@ -15,9 +15,10 @@
         Title="Marsher" Height="530" Width="800"
 
         Dialog:DialogParticipation.Register="{Binding}"
-        GlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded" d:DataContext="{d:DesignInstance local:MainViewModel}" Closing="MetroWindow_Closing">
+        GlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded" d:DataContext="{d:DesignInstance local:MainViewModel}" Closing="MetroWindow_Closing" Icon="Resources/Icons/Logo.ico">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
+            <Button Content="{Binding Version}" IsEnabled="False" Foreground="Black"></Button>
             <Button x:Name="LoginCommand" Content="{Tx:T ui.commands.login}" Click="LoginCommand_Click">
                 <Button.ContextMenu>
                     <ContextMenu x:Name="LoginContextMenu">

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Timers;
-using System.Threading.Tasks;
 
 namespace Marsher
 {
@@ -79,7 +75,7 @@ namespace Marsher
         }
 
         /// <summary>
-        /// 延迟timesMs后执行。 
+        /// 延迟timesMs后执行。
         /// </summary>
         public void Delay(int timeMs, ISynchronizeInvoke invoker, Action action)
         {

@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Xml.XPath;
 using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 
 namespace Marsher
@@ -23,12 +23,13 @@ namespace Marsher
 
         protected readonly string HttpUserAgent =
             $"Marsher {Assembly.GetExecutingAssembly().GetName().Version}: a marshmallow client for livestreamers.";
-        private const string SessionFolder = "sessions";
+        private readonly string SessionFolder;
 
         protected CookieContainer _container = new CookieContainer();
 
         protected Service()
         {
+            SessionFolder = MarsherFilesystem.GetPath("sessions");
             LoadCookie();
         }
 
@@ -141,14 +142,17 @@ namespace Marsher
                     Encoding encoding;
                     try
                     {
-                        encoding = Encoding.GetEncoding(resp.ContentEncoding);
+                        encoding = Encoding.GetEncoding(string.IsNullOrWhiteSpace(resp.CharacterSet) ? resp.ContentEncoding : resp.CharacterSet);
                     }
                     catch (ArgumentException)
                     {
                         encoding = Encoding.UTF8;
                     }
                     var doc = new HtmlDocument();
-                    doc.Load(resp.GetResponseStream(), encoding);
+                    using (var stream = resp.GetResponseStream())
+                        if (stream != null)
+                            doc.Load(stream, encoding);
+                        else return;
 
                     var nodes = doc.DocumentNode.SelectNodes(_findAllMarshmallowsExpression);
                     var items = (
@@ -181,6 +185,9 @@ namespace Marsher
 
     public class PeingService : Service
     {
+        private readonly XPathExpression _extractExpression
+            = XPathExpression.Compile("//div[@data-questions]");
+        private readonly XPathExpression _findLoadLastPageExpression = XPathExpression.Compile("//span[contains(@class, 'last')]//a");
         protected override void OnCookieUpdated()
         {
             CheckLoginStatusAndFailOnRedirect("https://peing.net/ja/stg");
@@ -188,6 +195,72 @@ namespace Marsher
 
         public override void Fetch(Func<IEnumerable<QaItem>, bool> update)
         {
+            var totalPages = 1;
+            for (int i = 1; i <= totalPages; i++)
+            {
+                var req = CreateWebRequest($"https://peing.net/zh-CN/box?page={i}");
+                try
+                {
+                    var resp = (HttpWebResponse)req.GetResponse();
+                    if (resp.StatusCode != HttpStatusCode.OK
+                        || !resp.ResponseUri.ToString().Contains("box"))
+                    {
+                        FireOnLoginStatusChanged(ServiceStatus.NotLoggedIn);
+                        break;
+                    }
+
+                    Encoding encoding;
+                    try
+                    {
+                        encoding = Encoding.GetEncoding(string.IsNullOrWhiteSpace(resp.CharacterSet) ? resp.ContentEncoding : resp.CharacterSet);
+                    }
+                    catch (ArgumentException)
+                    {
+                        encoding = Encoding.UTF8;
+                    }
+
+                    var doc = new HtmlDocument();
+                    using (var stream = resp.GetResponseStream())
+                        if (stream != null)
+                            doc.Load(stream, encoding);
+                        else return;
+
+                    var nodes = doc.DocumentNode.SelectNodes(_extractExpression);
+                    if (nodes == null || nodes.Count == 0) continue;
+
+                    var json = nodes[0].GetAttributeValue("data-questions", "[]");
+                    json = WebUtility.HtmlDecode(json);
+                    var items = new List<QaItem>();
+                    foreach (var token in JArray.Parse(json))
+                    {
+                        if (!(token is JObject obj)) continue;
+                        if (!obj.ContainsKey("uuid_hash")
+                            || !obj.ContainsKey("body")) continue;
+                        items.Add(new QaItem
+                        {
+                            Content = obj.GetValue("body").ToString(),
+                            Id = obj.GetValue("uuid_hash").ToString(),
+                            Service = QaService.Peing
+                        });
+                    }
+
+                    if (!update(items)) break;
+
+                    var lastPageNodes = doc.DocumentNode.SelectNodes(_findLoadLastPageExpression);
+                    if (lastPageNodes == null || lastPageNodes.Count == 0) break;
+                    var lastPageNode = lastPageNodes[0];
+                    var lastUriRelative = lastPageNode.GetAttributeValue("href", "null");
+                    if (lastUriRelative == "null") return;
+                    var pagePos = lastUriRelative.LastIndexOf('=') + 1;
+                    if (pagePos < lastUriRelative.Length)
+                        int.TryParse(lastUriRelative.Substring(pagePos), out totalPages);
+                }
+                catch (Exception)
+                {
+                    FireOnLoginStatusChanged(ServiceStatus.Error);
+                    break;
+                }
+            }
             //throw new NotImplementedException();
         }
     }

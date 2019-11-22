@@ -43,7 +43,7 @@ namespace Marsher
                 // If taskbar is set to "auto-hide", then this list will be empty, and we will do nothing.
                 foreach (var taskBar in taskBarLocation)
                 {
-                    Rectangle windowRect = new Rectangle((int)window.Left, (int)window.Top, (int)window.Width, (int)window.Height);
+                    var windowRect = new Rectangle((int)window.Left, (int)window.Top, (int)window.Width, (int)window.Height);
 
                     // Keep on shifting the window out of the way.
                     int avoidInfiniteLoopCounter = 25;
@@ -108,7 +108,7 @@ namespace Marsher
             List<Rectangle> dockedRects = new List<Rectangle>();
             foreach (var screen in Screen.AllScreens)
             {
-                if (screen.Bounds.Equals(screen.WorkingArea) == true)
+                if (screen.Bounds.Equals(screen.WorkingArea))
                 {
                     // No taskbar on this screen.
                     continue;

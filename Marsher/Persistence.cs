@@ -8,13 +8,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Marsher
 {
+    public static class MarsherFilesystem
+    {
+        private const string PortableSwitchFilename = "portable_version";
+        private static readonly string[] BasePath = new string[]
+        {
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Marsher"
+        };
+
+        public static string GetPath(params string[] parts)
+        {
+            return Path.Combine(
+                File.Exists(PortableSwitchFilename)
+                    ? parts : BasePath.Concat(parts).ToArray());
+        }
+    }
+
     public class QaDataContext : DbContext
     {
         public DbSet<QaItem> Items { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = new SqliteConnectionStringBuilder { DataSource = "database.sqlite3" }.ConnectionString;
+            var connectionString = new SqliteConnectionStringBuilder { DataSource = MarsherFilesystem.GetPath("database.sqlite3") }.ConnectionString;
             var connection = new SqliteConnection(connectionString);
 
             optionsBuilder.UseSqlite(connection);
@@ -46,14 +63,12 @@ namespace Marsher
         private const string ListDirectoryName = "lists";
         private const string ExtensionName = ".txt";
 
-        private List<QaListStubs> lists = new List<QaListStubs>();
-        private QaDataContext _database;
+        private readonly List<QaListStubs> _lists = new List<QaListStubs>();
 
-        public LocalListPersistence(QaDataContext database)
+        public LocalListPersistence()
         {
-            _database = database;
-            if (!Directory.Exists(ListDirectoryName))
-                Directory.CreateDirectory(ListDirectoryName);
+            if (!Directory.Exists(MarsherFilesystem.GetPath(ListDirectoryName)))
+                Directory.CreateDirectory(MarsherFilesystem.GetPath(ListDirectoryName));
             foreach (var file in Directory.EnumerateFiles(ListDirectoryName))
             {
                 if (!Path.HasExtension(file) || Path.GetExtension(file) != ExtensionName) continue;
@@ -64,10 +79,10 @@ namespace Marsher
         public QaListStubs CreateList(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new IllegalListNameException();
-            if (lists.Any(it => it.Name == name)) throw new DuplicateListNameException();
+            if (_lists.Any(it => it.Name == name)) throw new DuplicateListNameException();
             if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) throw new IllegalListNameException();
 
-            var filename = Path.Combine(ListDirectoryName, name + ExtensionName);
+            var filename = MarsherFilesystem.GetPath(ListDirectoryName, name + ExtensionName);
             if (File.Exists(filename))
             {
                 LoadList(filename);
@@ -87,7 +102,7 @@ namespace Marsher
                 Name = name,
                 Filename = filename
             };
-            lists.Add(list);
+            _lists.Add(list);
             OnListModified?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list));
             return list;
         }
@@ -100,17 +115,17 @@ namespace Marsher
                 Filename = file
             };
             list.Items.AddRange(File.ReadAllLines(file));
-            lists.Add(list);
+            _lists.Add(list);
             OnListModified?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list));
         }
 
         public void UpdateList(QaListStubs stub, bool filenameChanged = false)
         {
-            var filename = Path.Combine(ListDirectoryName, stub.Name + ExtensionName);
+            var filename = MarsherFilesystem.GetPath(ListDirectoryName, stub.Name + ExtensionName);
             if (filenameChanged)
             {
                 if (string.IsNullOrWhiteSpace(stub.Name)) throw new IllegalListNameException();
-                if (lists.Any(it => it.Name == stub.Name && it != stub)) throw new DuplicateListNameException();
+                if (_lists.Any(it => it.Name == stub.Name && it != stub)) throw new DuplicateListNameException();
                 if (stub.Name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) throw new IllegalListNameException();
                 try
                 {
@@ -134,14 +149,14 @@ namespace Marsher
 
         public void RemoveList(QaListStubs stub)
         {
-            lists.Remove(stub);
+            _lists.Remove(stub);
             OnListModified?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, stub));
             File.Delete(stub.Filename);
         }
 
         public IEnumerable<QaListStubs> GetAllStubs()
         {
-            return lists;
+            return _lists;
         }
 
         public event NotifyCollectionChangedEventHandler OnListModified;

@@ -7,11 +7,11 @@ using System.Windows;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Marsher")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("在本地整理、展示来自マシュマロ（棉花糖/MarshmallowQA）、Peing等匿名提问箱的提问的工具。")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CharlieJiang@DDCenter")]
 [assembly: AssemblyProduct("Marsher")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCopyright("Copyleft © DD Center 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US",

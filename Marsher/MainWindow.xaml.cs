@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -31,19 +30,23 @@ namespace Marsher
     /// </summary>
     public partial class MainWindow
     {
-        private MainViewModel _viewModel;
+        private readonly MarsherUpdateManager _updateManager;
 
-        private MarshmallowService _marshmallowService;
-        private PeingService _peingService;
-        private QaDataContext _database = new QaDataContext();
-        private LocalListPersistence _localListPersistence;
+        private readonly MainViewModel _viewModel;
+
+        private readonly MarshmallowService _marshmallowService;
+        private readonly PeingService _peingService;
+        private readonly QaDataContext _database = new QaDataContext();
+        private readonly LocalListPersistence _localListPersistence;
         private readonly DisplayCommunication _displayCommunication;
 
-        private DelayAction _saveDatabaseAction = new DelayAction();
-        private Task _currentTask = null;
+        private readonly DelayAction _saveDatabaseAction = new DelayAction();
+        private Task _currentTask;
         public MainWindow()
         {
             LoadFromXmlFile("Resources/dictionary.txd");
+            _updateManager = new MarsherUpdateManager();
+            _updateManager.CheckUpdate();
 
             try
             {
@@ -69,11 +72,14 @@ namespace Marsher
             }
 
             InitializeComponent();
-            _viewModel = new MainViewModel(_database, DialogCoordinator.Instance);
+            _viewModel = new MainViewModel(_database, DialogCoordinator.Instance)
+            {
+                Version = "v" + _updateManager.GetCurrentVersion()
+            };
             DataContext = _viewModel;
             _database.Database.EnsureCreatedAsync();
             _database.Items.LoadAsync();
-            _localListPersistence = new LocalListPersistence(_database);
+            _localListPersistence = new LocalListPersistence();
 
             QaListSelector.SelectedIndex = 0;
             //QaList.ItemsSource = _viewModel.ActiveQaList;
@@ -421,7 +427,7 @@ namespace Marsher
             try
             {
                 if (_viewModel.ActiveQaItem != null)
-                    _displayCommunication.UpdateText(_viewModel.ActiveQaItem.Content, () =>
+                    _displayCommunication.UpdateText(_viewModel.ActiveQaItem, () =>
                     {
                         UpdateStatusText(T("status.display_updated"));
                     });
@@ -435,12 +441,14 @@ namespace Marsher
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             _database.SaveChanges();
+            _updateManager.Dispose();
         }
     }
 
+    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     internal class MainViewModel : INotifyPropertyChanged, IDropTarget
     {
-        private Dictionary<ServiceStatus, PackIconMaterialKind> _statusDictionary = new Dictionary<ServiceStatus, PackIconMaterialKind>()
+        private readonly Dictionary<ServiceStatus, PackIconMaterialKind> _statusDictionary = new Dictionary<ServiceStatus, PackIconMaterialKind>()
         {
             { ServiceStatus.Available, PackIconMaterialKind.CheckCircleOutline },
             { ServiceStatus.Error, PackIconMaterialKind.AlertOutline },
@@ -510,6 +518,16 @@ namespace Marsher
         }
 
         private readonly QaDataContext _dataContext;
+
+        private string _version = "";
+        public string Version
+        {
+            get => _version;
+            set
+            {
+                _version = value;
+                FireOnPropertyChanged();
+            } }
 
         public MainViewModel(QaDataContext dbContext, IDialogCoordinator dialogCoordinator)
         {
@@ -643,12 +661,11 @@ namespace Marsher
                 ? DragDropEffects.Move : DragDropEffects.Copy;
         }
 
-        private bool CanAcceptData(IDropInfo dropInfo)
+        private static bool CanAcceptData(IDropInfo dropInfo)
         {
             if (!(dropInfo.DragInfo?.SourceCollection is ObservableCollection<QaItem>)) return false;
-            var gargs = dropInfo?.DragInfo?.SourceCollection?.GetType()?.GetGenericArguments();
-            if (gargs == null || gargs.Length < 1) return false;
-            return gargs[0].IsAssignableFrom(typeof(QaItem));
+            var gargs = dropInfo.DragInfo?.SourceCollection?.GetType().GetGenericArguments();
+            return gargs.Length >= 1 && gargs[0].IsAssignableFrom(typeof(QaItem));
         }
 
         public async void Drop(IDropInfo dropInfo)
@@ -731,38 +748,36 @@ namespace Marsher
 
     public class QaListStubsViewModel : INotifyPropertyChanged, INotifyCollectionChanged
     {
-        private QaDataContext _database;
         public QaListStubsViewModel(QaListStubs underlying, QaDataContext database)
         {
-            _underlying = underlying;
-            _database = database;
+            Underlying = underlying;
 
-            _populatedItems = new ObservableCollection<QaItem>(database.LoadStubs(underlying).Items);
-            _populatedItems.CollectionChanged += (sender, args) =>
+            PopulatedItems = new ObservableCollection<QaItem>(database.LoadStubs(underlying).Items);
+            PopulatedItems.CollectionChanged += (sender, args) =>
             {
                 // sync the changes back to the underlying id list.
                 switch (args.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
                         if (args.NewItems != null && args.NewItems.Count > 0)
-                             _underlying.Items.Insert(args.NewStartingIndex, ((QaItem) args.NewItems[0]).Id);
+                             Underlying.Items.Insert(args.NewStartingIndex, ((QaItem) args.NewItems[0]).Id);
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        _underlying.Items.RemoveAt(args.OldStartingIndex);
+                        Underlying.Items.RemoveAt(args.OldStartingIndex);
                         break;
                     case NotifyCollectionChangedAction.Reset:
-                        _underlying.Items.Clear();
+                        Underlying.Items.Clear();
                         break;
                     case NotifyCollectionChangedAction.Replace:
                         if (args.NewItems != null && args.NewItems.Count > 0 && args.NewStartingIndex != -1)
-                            _underlying.Items[args.NewStartingIndex] = ((QaItem)args.NewItems[0]).Id;
+                            Underlying.Items[args.NewStartingIndex] = ((QaItem)args.NewItems[0]).Id;
                         break;
                     case NotifyCollectionChangedAction.Move:
                         if (args.NewItems != null && args.NewItems.Count > 0 && args.NewStartingIndex != -1)
                         {
-                            var obj = _underlying.Items[args.OldStartingIndex];
-                            _underlying.Items.RemoveAt(args.OldStartingIndex);
-                            _underlying.Items.Insert(args.NewStartingIndex, obj);
+                            var obj = Underlying.Items[args.OldStartingIndex];
+                            Underlying.Items.RemoveAt(args.OldStartingIndex);
+                            Underlying.Items.Insert(args.NewStartingIndex, obj);
                         }
                         break;
                     default:
@@ -773,29 +788,26 @@ namespace Marsher
             };
         }
 
-        private QaListStubs _underlying;
-        private ObservableCollection<QaItem> _populatedItems;
-
-        public QaListStubs Underlying => _underlying;
-        public ObservableCollection<QaItem> PopulatedItems => _populatedItems;
+        public QaListStubs Underlying { get; }
+        public ObservableCollection<QaItem> PopulatedItems { get; }
 
         public string Name
         {
-            get => _underlying.Name;
-            set => _underlying.Name = Name;
+            get => Underlying.Name;
+            set => Underlying.Name = value;
         }
 
         public bool Locked
         {
-            get => _underlying.Locked;
+            get => Underlying.Locked;
             set
             {
-                _underlying.Locked = value;
+                Underlying.Locked = value;
                 OnPropertyChanged();
             }
         }
 
-        public List<string> Items => _underlying.Items;
+        public List<string> Items => Underlying.Items;
 
         public event PropertyChangedEventHandler PropertyChanged;
         [NotifyPropertyChangedInvocator]
@@ -809,7 +821,7 @@ namespace Marsher
 
     public class QaIconConverter : IValueConverter
     {
-        private Dictionary<QaService, ImageSource> _sources = new Dictionary<QaService, ImageSource>();
+        private readonly Dictionary<QaService, ImageSource> _sources = new Dictionary<QaService, ImageSource>();
 
         public QaIconConverter()
         {
@@ -822,9 +834,9 @@ namespace Marsher
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is QaService)) return null;
-            var serv = (QaService) value;
-            if (_sources.ContainsKey(serv)) return _sources[serv];
-            return null;
+            var service = (QaService) value;
+            return _sources.ContainsKey(service)
+                ? _sources[service] : null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
