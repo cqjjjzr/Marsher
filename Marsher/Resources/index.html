@@ -118,13 +118,13 @@
       const appelem = $("#app");
       appelem.transition({opacity: '0'}, 250, "snap", () => {
         switch (tobj.type) {
-          case "marshmallow":
+          case 0x10:
             $('#text').text(tobj.text);
             $('#marshmallow_wrapper').css("display", "block");
             $('#peing_wrapper').css("display", "none");
             appelem.transition({opacity: '1'}, 250, "snap");
             break;
-          case "peing":
+          case 0x20:
             $('#text_peing').text(tobj.text);
             $('#marshmallow_wrapper').css("display", "none");
             $('#peing_wrapper').css("display", "block");
@@ -133,7 +133,7 @@
         }
       });
     }
-    
+
     function initialize() {
       const ws = new WebSocket("ws://localhost:19100/display"); // refer to DisplayCommunication.cs
       ws.onopen = () => {

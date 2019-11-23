@@ -19,22 +19,29 @@ namespace Marsher
                 File.WriteAllText(updateUrlPath, DefaultUpdateUrl);
             else
                 _updateUrl = File.ReadAllText(updateUrlPath);
-            _mgr = new UpdateManager(_updateUrl);
+            try
+            {
+                _mgr = new UpdateManager(_updateUrl);
+            }
+            catch (Exception)
+            {
+                _mgr = null;
+            }
         }
 
         public void CheckUpdate()
         {
-            _mgr.UpdateApp();
+            _mgr?.UpdateApp();
         }
 
         public string GetCurrentVersion()
         {
-            return _mgr.CurrentlyInstalledVersion()?.ToString() ?? Assembly.GetCallingAssembly().GetName().Version.ToString();
+            return _mgr?.CurrentlyInstalledVersion()?.ToString() ?? Assembly.GetCallingAssembly().GetName().Version.ToString();
         }
 
         public void Dispose()
         {
-            _mgr.Dispose();
+            _mgr?.Dispose();
         }
     }
 }

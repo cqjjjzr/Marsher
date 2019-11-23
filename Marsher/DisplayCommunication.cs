@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -16,6 +18,9 @@ namespace Marsher
         private readonly HttpServer _wsServer;
         internal JObject _lastMessage = new JObject { ["type"] = (int) QaService.Marshmallow, ["text"] = "" };
 
+        private readonly string _rootPath =
+            Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location ?? "Marsher.exe"), "resources");
+
         public DisplayCommunication()
         {
             _wsServer = new HttpServer(DisplayWSPort);
@@ -30,8 +35,8 @@ namespace Marsher
                     path = path.Substring(1);
                 if (path == "/")
                     path += "index.html";
-                path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "resources", path));
-                if (!path.StartsWith(Directory.GetCurrentDirectory()))
+                path = Path.GetFullPath(Path.Combine(_rootPath, path));
+                if (!path.StartsWith(_rootPath, true, CultureInfo.CurrentCulture))
                 {
                     res.StatusCode = (int)HttpStatusCode.NotFound;
                     return;

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- TxTranslation dictionary file. Use TxEditor to edit this file. http://unclassified.software/txtranslation -->
 <translation xml:space="preserve">
-	<culture name="en" primary="true">
+	<culture name="en">
 		<text key="dialog.cancel">cancel</text>
 		<text key="dialog.create_failed">Failed to create list {name}!
 Details:{exception}</text>
@@ -36,30 +36,88 @@ Details:{exception}</text>
 		<text key="status.fetching">Fetching from upstream service...</text>
 		<text key="status.logged_in.marshmallow">Marshmallow service logged in.</text>
 		<text key="status.logged_in.peing">Peing service logged in.</text>
-		<text key="ui.collector" comment="整理期标题">Collector for {name}</text>
+		<text key="ui.collector">Collector for {name}</text>
 		<text key="ui.commands.fetch">fetch</text>
-		<text key="ui.commands.login" comment="右上方登录菜单">login service</text>
+		<text key="ui.commands.login">login service</text>
 		<text key="ui.commands.login.logout">Log out</text>
 		<text key="ui.commands.login.marshmallow">Login to Marshmallow</text>
 		<text key="ui.commands.login.peing">Login to Peing</text>
 		<text key="ui.item.content">Content</text>
-		<text key="ui.item.display" comment="按钮：在本地服务上显示当前选择的提问">Display</text>
+		<text key="ui.item.display">Display</text>
 		<text key="ui.item.id">ID</text>
 		<text key="ui.list.empty">Empty List</text>
-		<text key="ui.list.empty_all" comment="用于“所有收到的提问”为空的时候的提示。">No questions in local storage. Please login in and fetch some items.</text>
-		<text key="ui.list.empty_list" comment="注意“所有收到的提问”的翻译需要与ui.list_all对应。">No questions in list. Please drag and drop some questions to the list.</text>
+		<text key="ui.list.empty_all" acceptpunctuation="true">No questions in local storage. Please login in and fetch some items.</text>
+		<text key="ui.list.empty_list" acceptpunctuation="true">No questions in list. Please drag and drop some questions to the list.</text>
 		<text key="ui.list_all">All received questions</text>
-		<text key="ui.login.finish" comment="登录窗口下方按钮">Finish logging in</text>
+		<text key="ui.login.finish">Finish logging in</text>
 		<text key="ui.preview">PREVIEW</text>
-		<text key="ui.status.marshmallow" comment="左下角状态栏标注的服务名">Marshmallow</text>
-		<text key="ui.status.peing" comment="左下角状态栏标注的服务名">peing</text>
+		<text key="ui.status.marshmallow">Marshmallow</text>
+		<text key="ui.status.peing">peing</text>
 		<text key="ui.toolbar.drag_to_remove">Drop here to remove</text>
 		<text key="ui.toolbar.edit_list">Open collector to edit question list</text>
 		<text key="ui.toolbar.new_list">New question list</text>
 		<text key="ui.toolbar.remove_list">Remove question list</text>
 		<text key="ui.toolbar.rename_list">Rename question list</text>
 	</culture>
-	<culture name="zh">
+	<culture name="ja-JP">
+		<text key="dialog.cancel">キャンセル</text>
+		<text key="dialog.create_failed">リスト{name}の作成に失敗しました。
+エラー詳細：{exception}</text>
+		<text key="dialog.create_list" acceptpunctuation="true">質問リスト名を入力してください：</text>
+		<text key="dialog.header.confirm">確認</text>
+		<text key="dialog.header.error">エラー</text>
+		<text key="dialog.header.new">新規作成</text>
+		<text key="dialog.header.rename">名前の変更</text>
+		<text key="dialog.header.warning">警告</text>
+		<text key="dialog.ie_fail">Internet Explorer 11が利用できません。質問箱サビースへのログインは制限されています。
+詳細情報：{exception}</text>
+		<text key="dialog.invalid_list_name" acceptpunctuation="true">リスト名{name}は有効ではありません！</text>
+		<text key="dialog.list_name_already_exists" acceptpunctuation="true">リスト{name}はすでに存在しています！</text>
+		<text key="dialog.no_ie" acceptpunctuation="true">Internet Explorer 11がインストールされていません。質問箱サビースへのログインは制限されています。</text>
+		<text key="dialog.ok">OK</text>
+		<text key="dialog.remove_confirm" acceptpunctuation="true">リスト{name}を削除してよろしいですか？</text>
+		<text key="dialog.remove_from_all" acceptpunctuation="true">ローカルストレージとすべてのリストから{#}個の質問を削除してよろしいですか？</text>
+		<text key="dialog.rename_failed">リスト{name}の名前変更に失敗しました。
+エラー詳細：{exception}</text>
+		<text key="dialog.rename_list" acceptpunctuation="true">リスト{oldName}の新しい名前を入力してください：</text>
+		<text key="service.marshmallow">マシュマロ</text>
+		<text key="service.peing">peing</text>
+		<text key="status.display.failed" acceptpunctuation="true">プレゼンテーションサビースが起動できません。</text>
+		<text key="status.display.not_running" acceptpunctuation="true">プレゼンテーションサビースが起動していません。</text>
+		<text key="status.display.running">プレゼンテーションサビース実行中: http://localhost:{port}</text>
+		<text key="status.display_updated" acceptpunctuation="true">プレゼンテーションを更新しました。</text>
+		<text key="status.dropped.marshmallow" acceptpunctuation="true">マシュマロサーバーへの接続が切断されました。</text>
+		<text key="status.dropped.peing" acceptpunctuation="true">Peingサーバーへの接続が切断されました。</text>
+		<text key="status.fetch_failed">質問の取得に失敗しました。{exception}</text>
+		<text key="status.fetch_update" acceptpunctuation="true">{service}サーバーから合計{pages}ページの{items}個の質問を取得しました。</text>
+		<text key="status.fetched" acceptpunctuation="true">取得に成功しました。合計{pages}ページから{items}個の質問を取得しました。</text>
+		<text key="status.fetching">質問箱サビースから質問を取得しています...</text>
+		<text key="status.logged_in.marshmallow" acceptpunctuation="true">マシュマロサーバーにログインしました。</text>
+		<text key="status.logged_in.peing" acceptpunctuation="true">Peingサーバーにログインしました。</text>
+		<text key="ui.collector">コレクター: {name}</text>
+		<text key="ui.commands.fetch">質問を取得</text>
+		<text key="ui.commands.login">質問箱サーバーにログイン</text>
+		<text key="ui.commands.login.logout">ログアウト</text>
+		<text key="ui.commands.login.marshmallow">マシュマロサーバーにログイン</text>
+		<text key="ui.commands.login.peing">Peingサーバーにログイン</text>
+		<text key="ui.item.content">内容</text>
+		<text key="ui.item.display">プレゼンテーション</text>
+		<text key="ui.item.id">ID</text>
+		<text key="ui.list.empty">無し</text>
+		<text key="ui.list.empty_all" acceptpunctuation="true">ローカルストレージに質問がありません。サーバーへログインし、質問を取得してください。</text>
+		<text key="ui.list.empty_list" acceptpunctuation="true">リストに質問がありません。「すべての質問」から何個か質問をここにドラッグして追加してください。</text>
+		<text key="ui.list_all">すべての質問</text>
+		<text key="ui.login.finish">ログインしたと確認</text>
+		<text key="ui.preview">プレビュー</text>
+		<text key="ui.status.marshmallow">マシュマロ</text>
+		<text key="ui.status.peing">Peing</text>
+		<text key="ui.toolbar.drag_to_remove">ここにドラッグして削除</text>
+		<text key="ui.toolbar.edit_list">質問リストの編集にコレクターを開く</text>
+		<text key="ui.toolbar.new_list">質問リストの新規作成</text>
+		<text key="ui.toolbar.remove_list">質問リストの削除</text>
+		<text key="ui.toolbar.rename_list">質問リストの名前変更</text>
+	</culture>
+	<culture name="zh" primary="true">
 		<text key="dialog.cancel">取消</text>
 		<text key="dialog.create_failed">创建列表{name}失败!
 详细：{exception}</text>
@@ -69,7 +127,7 @@ Details:{exception}</text>
 		<text key="dialog.header.new">新建</text>
 		<text key="dialog.header.rename">重命名</text>
 		<text key="dialog.header.warning">警告</text>
-		<text key="dialog.ie_fail">无法该程序启用Internet Explorer 11!可能无法登入提问箱服务于.
+		<text key="dialog.ie_fail">无法为该程序启用Internet Explorer 11!可能无法登入提问箱服务.
 附加信息：{exception}</text>
 		<text key="dialog.invalid_list_name">无效列表名{name}!</text>
 		<text key="dialog.list_name_already_exists">列表{name}已存在!</text>
@@ -94,23 +152,23 @@ Details:{exception}</text>
 		<text key="status.fetching">从上游提问箱服务拉取提问中...</text>
 		<text key="status.logged_in.marshmallow">已登入Marshmallow服务.</text>
 		<text key="status.logged_in.peing">已登入peing服务.</text>
-		<text key="ui.collector">整理器: {name}</text>
+		<text key="ui.collector" comment="整理器标题">整理器: {name}</text>
 		<text key="ui.commands.fetch">拉取提问</text>
-		<text key="ui.commands.login">登录提问箱服务</text>
+		<text key="ui.commands.login" comment="右上方登录菜单">登录提问箱服务</text>
 		<text key="ui.commands.login.logout">登出</text>
 		<text key="ui.commands.login.marshmallow">登入Marshmallow服务</text>
 		<text key="ui.commands.login.peing">登入Peing服务</text>
 		<text key="ui.item.content">内容</text>
-		<text key="ui.item.display">显示</text>
+		<text key="ui.item.display" comment="按钮：在本地服务上显示当前选择的提问">显示</text>
 		<text key="ui.item.id">ID</text>
 		<text key="ui.list.empty">空空如也</text>
-		<text key="ui.list.empty_all" acceptpunctuation="true">本地存储中没有收到的提问。请登录服务并拉取提问。</text>
-		<text key="ui.list.empty_list" acceptpunctuation="true">列表中没有提问，请从“所有收到的提问”中拖拽一些问题到列表中。</text>
+		<text key="ui.list.empty_all" acceptpunctuation="true" comment="用于“所有收到的提问”为空的时候的提示。">本地存储中没有收到的提问。请登录服务并拉取提问。</text>
+		<text key="ui.list.empty_list" acceptpunctuation="true" comment="注意“所有收到的提问”的翻译需要与ui.list_all对应。">列表中没有提问，请从“所有收到的提问”中拖拽一些问题到列表中。</text>
 		<text key="ui.list_all">所有收到的提问</text>
-		<text key="ui.login.finish">我登录好了</text>
+		<text key="ui.login.finish" comment="登录窗口下方按钮">我登录好了</text>
 		<text key="ui.preview">预览</text>
-		<text key="ui.status.marshmallow">Marshmallow</text>
-		<text key="ui.status.peing">peing</text>
+		<text key="ui.status.marshmallow" comment="左下角状态栏标注的服务名">Marshmallow</text>
+		<text key="ui.status.peing" comment="左下角状态栏标注的服务名">peing</text>
 		<text key="ui.toolbar.drag_to_remove">拖放在此以删除</text>
 		<text key="ui.toolbar.edit_list">打开收集器以修改提问列表</text>
 		<text key="ui.toolbar.new_list">新建提问列表</text>

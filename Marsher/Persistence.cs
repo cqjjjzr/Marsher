@@ -19,9 +19,13 @@ namespace Marsher
 
         public static string GetPath(params string[] parts)
         {
-            return Path.Combine(
-                File.Exists(PortableSwitchFilename)
-                    ? parts : BasePath.Concat(parts).ToArray());
+            if (File.Exists(PortableSwitchFilename))
+                return Path.Combine(parts);
+
+            var path = Path.Combine(BasePath);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return Path.Combine(BasePath.Concat(parts).ToArray());
         }
     }
 
@@ -67,9 +71,10 @@ namespace Marsher
 
         public LocalListPersistence()
         {
-            if (!Directory.Exists(MarsherFilesystem.GetPath(ListDirectoryName)))
-                Directory.CreateDirectory(MarsherFilesystem.GetPath(ListDirectoryName));
-            foreach (var file in Directory.EnumerateFiles(ListDirectoryName))
+            var directory = MarsherFilesystem.GetPath(ListDirectoryName);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+            foreach (var file in Directory.EnumerateFiles(directory))
             {
                 if (!Path.HasExtension(file) || Path.GetExtension(file) != ExtensionName) continue;
                 LoadList(file);

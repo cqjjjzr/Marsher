@@ -44,7 +44,7 @@ namespace Marsher
         private Task _currentTask;
         public MainWindow()
         {
-            LoadFromXmlFile("Resources/dictionary.txd");
+            LoadFromXmlFile(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location ?? "Marsher.exe"), "Resources", "dictionary.txd"));
             _updateManager = new MarsherUpdateManager();
             _updateManager.CheckUpdate();
 
@@ -597,7 +597,7 @@ namespace Marsher
                 return;
             }
 
-            EmptyListIndicatorText = T(ReferenceEquals(_activeList, AllQaItemsList) ? "ui.list.empty_all" : "ui.list.empty_list");
+            EmptyListIndicatorText = T(ReferenceEquals(_activeQaItems, AllQaItemsList.Items) ? "ui.list.empty_all" : "ui.list.empty_list");
             EmptyListIndicatorVisibility = Visibility.Visible;
         }
 
