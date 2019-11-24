@@ -8,7 +8,7 @@ namespace Marsher
     public class MarsherUpdateManager : IDisposable
     {
         private const string UpdateUrlPath = "update_url.txt";
-        private const string DefaultUpdateUrl = "C:\\Users\\cqjjj\\source\\repos\\Marsher\\Releases";
+        private const string DefaultUpdateUrl = "https://soft.danmuji.org/Marsher";
 
         private readonly string _updateUrl = DefaultUpdateUrl;
         private readonly UpdateManager _mgr;
