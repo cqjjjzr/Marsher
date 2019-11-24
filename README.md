@@ -44,7 +44,9 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 
 你可以在以下链接下载安装最新的Marsher：
 
-https://soft.danmuji.org/Marsher/Marsher-Setup-1.0.0.exe
+https://soft.danmuji.org/Marsher/
+
+也可以通过本Repo中的Release下载。
 
 直接运行安装包可一键安装。
 
