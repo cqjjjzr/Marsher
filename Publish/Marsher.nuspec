@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Marsher</id>
+    <!-- Version will be replaced by Package.ps1 -->
+    <version>1.0.0</version>
+    <title>Marsher</title>
+    <authors>CharlieJiang@DD Center</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/cqjjjzr/Marsher</projectUrl>
+    <description>一个在本地整理、展示来自マシュマロ（棉花糖/MarshmallowQA）、Peing等匿名提问箱的提问的工具。</description>
+    <copyright>Copyleft © DD Center 2019</copyright>
+    <language>zh-CN</language>
+  </metadata>
+  <files>
+    <file src="**\*.*" target="lib\net472\" />
+  </files>
+</package>
