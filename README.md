@@ -1,11 +1,9 @@
 <div align="center">
-    <a href="https://github.com/cqjjjzr/Marsher">
-    <img src="./.github/MarsherHeader.png" /></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img src="./.github/MarsherHeader.png"></a>
 	<h1>Marsher「棉花串」</h1>
-
-    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/license/cqjjjzr/Marsher?style=flat-square" /></a>
-    <a href="https://github.com/cqjjjzr/Marsher/issues"><img alt="GitHub" src="https://img.shields.io/github/issues/cqjjjzr/Marsher?style=flat-square" /></a>
-    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/stars/cqjjjzr/Marsher?style=flat-square" /></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/license/cqjjjzr/Marsher?style=flat-square"></a>
+    <a href="https://github.com/cqjjjzr/Marsher/issues"><img alt="GitHub" src="https://img.shields.io/github/issues/cqjjjzr/Marsher?style=flat-square"></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/stars/cqjjjzr/Marsher?style=flat-square"></a>
 </div>
 
 > 「有了Marsher，棉花糖回天天开。」
@@ -46,7 +44,7 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 
 你可以在以下链接下载安装最新的Marsher：
 
-// TO BE FILLED
+https://soft.danmuji.org/Marsher/Marsher-Setup-1.0.0.exe
 
 直接运行安装包可一键安装。
 
@@ -182,9 +180,11 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 
 ## 来自群组：GitHub DD Center
 
-![DDC](./.github/DDC.png)
+<div align="center">
+    <img src="./.github/DDC.png" />
+</div>
 
-DD Center是一个主要活动于虚拟主播领域的程序员社团。
+[DD Center](https://dd.center)是一个主要活动于虚拟主播领域的程序员社团。
 
 DD Center的其他产品：
 
