@@ -180,9 +180,11 @@ https://soft.danmuji.org/Marsher/Marsher-Setup-1.0.0.exe
 
 ## 来自群组：GitHub DD Center
 
-![DDC](./.github/DDC.png)
+<div align="center">
+    <img src="./.github/DDC.png" />
+</div>
 
-DD Center是一个主要活动于虚拟主播领域的程序员社团。
+[DD Center](https://dd.center)是一个主要活动于虚拟主播领域的程序员社团。
 
 DD Center的其他产品：
 
