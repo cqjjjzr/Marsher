@@ -1,11 +1,9 @@
 <div align="center">
-    <a href="https://github.com/cqjjjzr/Marsher">
-    <img src="./.github/MarsherHeader.png" /></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img src="./.github/MarsherHeader.png"></a>
 	<h1>Marsher「棉花串」</h1>
-
-    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/license/cqjjjzr/Marsher?style=flat-square" /></a>
-    <a href="https://github.com/cqjjjzr/Marsher/issues"><img alt="GitHub" src="https://img.shields.io/github/issues/cqjjjzr/Marsher?style=flat-square" /></a>
-    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/stars/cqjjjzr/Marsher?style=flat-square" /></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/license/cqjjjzr/Marsher?style=flat-square"></a>
+    <a href="https://github.com/cqjjjzr/Marsher/issues"><img alt="GitHub" src="https://img.shields.io/github/issues/cqjjjzr/Marsher?style=flat-square"></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/stars/cqjjjzr/Marsher?style=flat-square"></a>
 </div>
 
 > 「有了Marsher，棉花糖回天天开。」
