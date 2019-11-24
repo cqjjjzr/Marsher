@@ -53,7 +53,7 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 关于安装：
 
 - 第一次启动时可能弹出Windows防火墙提示，这是由于Marsher需要在本地启动一个服务器以供OBS等调用。请选择“**解除限制**”或“允许”；
-- 如果你的系统没有安装.NET Framework 4.7.2，则安装程序会自动联网安装。但是在中国大陆访问Microsoft的服务器较慢，因此建议自行于[官网下载离线安装包安装](http://go.microsoft.com/fwlink/?linkid=863265)；当安装出错的时候也可以考虑使用离线安装包；
+- 如果你的系统没有安装.NET Framework 4.7.2，则安装程序会自动联网安装。但是在中国大陆访问Microsoft的服务器较慢，因此建议自行于[官网下载离线安装包安装](http://go.microsoft.com/fwlink/?linkid=863265)；当安装出错的时候（已知过旧的Windows 7会导致在线安装失败）也可以考虑使用离线安装包；
 - 由于Windows 7上需要单独安装Internet Explorer 11与.NET Framework，且.NET Framework安装可能出现神秘问题，因此强烈建议使用Windows 10；
 
 ### 关于安全的问题
@@ -87,7 +87,7 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 
 > 对peing用户而言，可能会弹出Internet Explorer的错误窗口，或出现显示错位等问题。不必理会，直接登录即可。出现下面界面就说明登录成功了。
 >
-> // 图n
+> ![图n](./.github/Figure15.png)
 
 几秒后，Marsher左下角应该提示Marshmallow服务可用。
 

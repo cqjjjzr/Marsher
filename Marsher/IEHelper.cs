@@ -12,21 +12,19 @@ namespace Marsher
             var current = GetInternetExplorerMajorVersion();
             if (current < 11) throw new IeVersionTooOldException();
 
-            using (
-                var rk = Registry.CurrentUser.OpenSubKey(
-                    @"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true)
-            )
+            var rk = Registry.CurrentUser.OpenSubKey(
+                         @"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true) ??
+                     Registry.CurrentUser.CreateSubKey(
+                         @"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true);
+            if (!uninstall)
             {
-                if (rk == null) throw new NotSupportedException("Couldn't change IE emulation mode!!!");
-                if (!uninstall)
-                {
-                    dynamic value = rk.GetValue(exename);
-                    if (value == null)
-                        rk.SetValue(exename, (uint)0x2AF9, RegistryValueKind.DWord); // Use IE11
-                }
-                else
-                    rk.DeleteValue(exename);
+                dynamic value = rk.GetValue(exename);
+                if (value == null)
+                    rk.SetValue(exename, (uint)0x2AF9, RegistryValueKind.DWord); // Use IE11
             }
+            else
+                rk.DeleteValue(exename);
+            rk.Dispose();
         }
 
         public static int GetInternetExplorerMajorVersion()
