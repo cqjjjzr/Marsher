@@ -1,8 +1,16 @@
-# Marsher「棉花串」
+<div align="center">
+    <a href="https://github.com/cqjjjzr/Marsher">
+    <img src="./.github/MarsherHeader.png" /></a>
+	<h1>Marsher「棉花串」</h1>
+
+    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/license/cqjjjzr/Marsher?style=flat-square" /></a>
+    <a href="https://github.com/cqjjjzr/Marsher/issues"><img alt="GitHub" src="https://img.shields.io/github/issues/cqjjjzr/Marsher?style=flat-square" /></a>
+    <a href="https://github.com/cqjjjzr/Marsher"><img alt="GitHub" src="https://img.shields.io/github/stars/cqjjjzr/Marsher?style=flat-square" /></a>
+</div>
 
 > 「有了Marsher，棉花糖回天天开。」
 >
-> 摆脱棉花糖回的截图→放OBS图片源工作流。一键操作的时代，来临了。
+> 摆脱棉花糖回的截图→放OBS图片源工作流。一键操作的时代，现已到来。
 
 Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/MarshmallowQA）、Peing等匿名提问箱的提问的工具。
 
@@ -40,11 +48,13 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 
 // TO BE FILLED
 
+直接运行安装包可一键安装。
+
 关于安装：
 
+- 第一次启动时可能弹出Windows防火墙提示，这是由于Marsher需要在本地启动一个服务器以供OBS等调用。请选择“**解除限制**”或“允许”；
 - 如果你的系统没有安装.NET Framework 4.7.2，则安装程序会自动联网安装。但是在中国大陆访问Microsoft的服务器较慢，因此建议自行于[官网下载离线安装包安装](http://go.microsoft.com/fwlink/?linkid=863265)；当安装出错的时候也可以考虑使用离线安装包；
-- 由于Windows 7上需要单独安装Internet Explorer 11与.NET Framework，且.NET Framework安装可能出现申必问题，因此强烈建议使用Windows 10；
-- 第一次启动时可能弹出Windows防火墙提示，这是由于Marsher需要在本地启动一个服务器以供OBS等调用。请选择“解除限制”或“允许”；
+- 由于Windows 7上需要单独安装Internet Explorer 11与.NET Framework，且.NET Framework安装可能出现神秘问题，因此强烈建议使用Windows 10；
 
 ### 关于安全的问题
 
@@ -172,7 +182,7 @@ Marsher为一个在本地整理、展示来自マシュマロ（棉花糖/Marshm
 
 ## 来自群组：GitHub DD Center
 
-//这里有张DDC的图
+![DDC](./.github/DDC.png)
 
 DD Center是一个主要活动于虚拟主播领域的程序员社团。
 
@@ -182,3 +192,12 @@ DD Center的其他产品：
 - [vtbs.moe](https://vtbs.moe)：VTBs in Bilibili！环哔哩哔哩虚拟主播圈数据中心
 - [BiliChat](https://bilichat.3shain.com/)： B站仿油管样式评论机，更多主播使用的哔哩哔哩弹幕框
 - and more......
+
+## Funding
+
+如果觉得我的程序有所帮助，你可以考虑给我买瓶水什么的。可以点击repo上方的“Sponsor”（Patreon），或扫码（微信）。
+
+<div align="center">
+    <img src="./.github/WechatFunding.png" />
+</div>
+

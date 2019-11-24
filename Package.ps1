@@ -37,6 +37,6 @@ $NewSetupPath = Join-Path $ReleasingPath "Marsher-Setup-$($MainExecutableVersion
 if (Test-Path $NewSetupPath) {
     Remove-Item -Path $NewSetupPath
 }
-squirrel -r $ReleasingPath --releasify $NuGetPackagePath -i $IconPath --framework-version=net472 -n '/a /tr http://tsa.wotrus.com/rfc3161' -g $AnimationPath
+squirrel -r $ReleasingPath --releasify $NuGetPackagePath -i $IconPath --framework-version=net472 -n '/a /tr http://tsa.wotrus.com/rfc3161' -g $AnimationPath --no-msi
 Rename-Item -Path $SetupPath "Marsher-Setup-$($MainExecutableVersion).exe"
 Write-Host -BackgroundColor Green -ForegroundColor White "Successfully packaged Marsher $($MainExecutableVersion)!"
