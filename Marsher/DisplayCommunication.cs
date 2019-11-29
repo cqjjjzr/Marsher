@@ -33,7 +33,7 @@ namespace Marsher
                 var path = req.Url.AbsolutePath;
                 if (path.StartsWith("/"))
                     path = path.Substring(1);
-                if (path == "/")
+                if (path == "/" || path == "")
                     path += "index.html";
                 path = Path.GetFullPath(Path.Combine(_rootPath, path));
                 if (!path.StartsWith(_rootPath, true, CultureInfo.CurrentCulture))
