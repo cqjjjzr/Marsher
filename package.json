@@ -1,0 +1,26 @@
+{
+  "name": "Marsher",
+  "version": "1.0.0",
+  "scripts": {
+    "commit": "git cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Afanyiyu/Marsher.git"
+  },
+  "keywords": [],
+  "author": "ChanrlieJiang@DDCenter",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Afanyiyu/Marsher/issues"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/git-cz"
+    }
+  },
+  "homepage": "https://github.com/Afanyiyu/Marsher#readme",
+  "dependencies": {
+    "git-cz": "^3.3.0"
+  }
+}
