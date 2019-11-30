@@ -13,6 +13,11 @@ Details:{exception}</text>
 		<text key="dialog.header.warning">Warning</text>
 		<text key="dialog.ie_fail">Failed enabling Internet Explorer 11 for this application! Service login may not work.
 Additional information: {exception}</text>
+		<text key="dialog.import">Import</text>
+		<text key="dialog.import.error_format">Failed to import {name}! Invalid file format.</text>
+		<text key="dialog.import.error_io">Failed to import {name}! {exception}</text>
+		<text key="dialog.import.existing" acceptpunctuation="true">Import to existing list:</text>
+		<text key="dialog.import.new_list" acceptpunctuation="true">Import to new list:</text>
 		<text key="dialog.invalid_list_name">Invalid list name {name}!</text>
 		<text key="dialog.list_name_already_exists">List {name} already exists!</text>
 		<text key="dialog.no_ie">You don't have Internet Explorer 11 installed on your system! Service login may not work.</text>
@@ -34,6 +39,8 @@ Details:{exception}</text>
 		<text key="status.fetch_update">Fetched {items} item(s) from {pages} page(s) from {service} service.</text>
 		<text key="status.fetched">Fetching completed. Fetched {items} items from {pages} pages.</text>
 		<text key="status.fetching">Fetching from upstream service...</text>
+		<text key="status.imported" acceptpunctuation="true">Imported {#} questions.</text>
+		<text key="status.imported" count="1" acceptpunctuation="true">Imported {#} question.</text>
 		<text key="status.logged_in.marshmallow">Marshmallow service logged in.</text>
 		<text key="status.logged_in.peing">Peing service logged in.</text>
 		<text key="ui.collector">Collector for {name}</text>
@@ -71,6 +78,9 @@ Details:{exception}</text>
 		<text key="dialog.header.warning">警告</text>
 		<text key="dialog.ie_fail">Internet Explorer 11が利用できません。質問箱サビースへのログインは制限されています。
 詳細情報：{exception}</text>
+		<text key="dialog.import">インポート</text>
+		<text key="dialog.import.existing">既存のリストにインポートする：</text>
+		<text key="dialog.import.new_list">新規リストにインポート：</text>
 		<text key="dialog.invalid_list_name" acceptpunctuation="true">リスト名{name}は有効ではありません！</text>
 		<text key="dialog.list_name_already_exists" acceptpunctuation="true">リスト{name}はすでに存在しています！</text>
 		<text key="dialog.no_ie" acceptpunctuation="true">Internet Explorer 11がインストールされていません。質問箱サビースへのログインは制限されています。</text>
@@ -129,6 +139,11 @@ Details:{exception}</text>
 		<text key="dialog.header.warning">警告</text>
 		<text key="dialog.ie_fail">无法为该程序启用Internet Explorer 11!可能无法登入提问箱服务.
 附加信息：{exception}</text>
+		<text key="dialog.import">导入</text>
+		<text key="dialog.import.error_format">导入文件{name}失败！无效的格式！</text>
+		<text key="dialog.import.error_io">导入文件{name}失败！{exception}</text>
+		<text key="dialog.import.existing">导入到已有列表：</text>
+		<text key="dialog.import.new_list">导入到新的列表：</text>
 		<text key="dialog.invalid_list_name">无效列表名{name}!</text>
 		<text key="dialog.list_name_already_exists">列表{name}已存在!</text>
 		<text key="dialog.no_ie">系统并未安装Internet Explorer 11!可能无法登录提问箱服务.</text>
@@ -150,6 +165,7 @@ Details:{exception}</text>
 		<text key="status.fetch_update">已从{service}的{pages}页中拉取{items}个提问.</text>
 		<text key="status.fetched">拉取完成. 从{pages}个页中拉取了{items}个提问.</text>
 		<text key="status.fetching">从上游提问箱服务拉取提问中...</text>
+		<text key="status.imported">已导入{#}个提问。</text>
 		<text key="status.logged_in.marshmallow">已登入Marshmallow服务.</text>
 		<text key="status.logged_in.peing">已登入peing服务.</text>
 		<text key="ui.collector" comment="整理器标题">整理器: {name}</text>

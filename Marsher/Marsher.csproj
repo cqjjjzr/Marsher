@@ -285,6 +285,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DelayAction.cs" />
+    <Compile Include="ImportDialog.xaml.cs">
+      <DependentUpon>ImportDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImportExport.cs" />
+    <Compile Include="InputWithCheckDialog.xaml.cs">
+      <DependentUpon>InputWithCheckDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DeleteConfirmDialog.xaml.cs">
       <DependentUpon>DeleteConfirmDialog.xaml</DependentUpon>
     </Compile>
@@ -305,9 +312,18 @@
     <Compile Include="Services.cs" />
     <Compile Include="ShiftWindowOntoScreenHelper.cs" />
     <Compile Include="UpdateManager.cs" />
+    <Compile Include="VirtualFileDataObject.cs" />
     <Page Include="CollectorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="InputWithCheckDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="DeleteConfirmDialog.xaml">
       <SubType>Designer</SubType>
