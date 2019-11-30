@@ -14,7 +14,7 @@ Details:{exception}</text>
 		<text key="dialog.ie_fail">Failed enabling Internet Explorer 11 for this application! Service login may not work.
 Additional information: {exception}</text>
 		<text key="dialog.import">Import</text>
-		<text key="dialog.import.error_format">Failed to import {name}! Invalid file format.</text>
+		<text key="dialog.import.error_format" acceptpunctuation="true">Failed to import {name}! Invalid file format.</text>
 		<text key="dialog.import.error_io">Failed to import {name}! {exception}</text>
 		<text key="dialog.import.existing" acceptpunctuation="true">Import to existing list:</text>
 		<text key="dialog.import.new_list" acceptpunctuation="true">Import to new list:</text>
@@ -79,6 +79,8 @@ Details:{exception}</text>
 		<text key="dialog.ie_fail">Internet Explorer 11が利用できません。質問箱サビースへのログインは制限されています。
 詳細情報：{exception}</text>
 		<text key="dialog.import">インポート</text>
+		<text key="dialog.import.error_format">ファイル{name}のインポートに失敗しました。ファイルフォーマットが無効です。</text>
+		<text key="dialog.import.error_io">ファイル{name}のインポートに失敗しました。{exception}</text>
 		<text key="dialog.import.existing">既存のリストにインポートする：</text>
 		<text key="dialog.import.new_list">新規リストにインポート：</text>
 		<text key="dialog.invalid_list_name" acceptpunctuation="true">リスト名{name}は有効ではありません！</text>
@@ -102,6 +104,7 @@ Details:{exception}</text>
 		<text key="status.fetch_update" acceptpunctuation="true">{service}サーバーから合計{pages}ページの{items}個の質問を取得しました。</text>
 		<text key="status.fetched" acceptpunctuation="true">取得に成功しました。合計{pages}ページから{items}個の質問を取得しました。</text>
 		<text key="status.fetching">質問箱サビースから質問を取得しています...</text>
+		<text key="status.imported">インポート完了。{#}個の質問を追加しました。</text>
 		<text key="status.logged_in.marshmallow" acceptpunctuation="true">マシュマロサーバーにログインしました。</text>
 		<text key="status.logged_in.peing" acceptpunctuation="true">Peingサーバーにログインしました。</text>
 		<text key="ui.collector">コレクター: {name}</text>
