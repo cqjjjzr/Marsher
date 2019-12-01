@@ -9,10 +9,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -22,9 +22,8 @@ using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.IconPacks;
 using Marsher.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using NuGet;
 using static Unclassified.TxLib.Tx;
+using TimeSpan = System.TimeSpan;
 
 namespace Marsher
 {
@@ -181,7 +180,20 @@ namespace Marsher
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
+            if (!_updateManager.Updated) return;
+            Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(t =>
+            {
+                var notes = File.ReadAllText(System.IO.Path.Combine(
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location ??
+                                                    "Marsher.exe"), "Resources", "RELEASES.md"));
+                Dispatcher?.Invoke(() =>
+                {
+                    var relNoteDisplay = new ReleaseNoteDisplay(notes);
+                    relNoteDisplay.Show();
+                    relNoteDisplay.Focus();
+                });
+            });
         }
 
         #region Login

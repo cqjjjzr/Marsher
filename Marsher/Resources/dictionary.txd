@@ -65,6 +65,7 @@ Details:{exception}</text>
 		<text key="ui.toolbar.new_list">New question list</text>
 		<text key="ui.toolbar.remove_list">Remove question list</text>
 		<text key="ui.toolbar.rename_list">Rename question list</text>
+		<text key="ui.updated">Marsher Updated</text>
 	</culture>
 	<culture name="ja-JP">
 		<text key="dialog.cancel">キャンセル</text>
@@ -129,6 +130,7 @@ Details:{exception}</text>
 		<text key="ui.toolbar.new_list">質問リストの新規作成</text>
 		<text key="ui.toolbar.remove_list">質問リストの削除</text>
 		<text key="ui.toolbar.rename_list">質問リストの名前変更</text>
+		<text key="ui.updated">Marsherが更新されました</text>
 	</culture>
 	<culture name="zh" primary="true">
 		<text key="dialog.cancel">取消</text>
@@ -193,5 +195,6 @@ Details:{exception}</text>
 		<text key="ui.toolbar.new_list">新建提问列表</text>
 		<text key="ui.toolbar.remove_list">删除提问列表</text>
 		<text key="ui.toolbar.rename_list">重命名提问列表</text>
+		<text key="ui.updated">Marsher已更新</text>
 	</culture>
 </translation>
