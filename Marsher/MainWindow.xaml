@@ -40,7 +40,7 @@
             <CollectionContainer Collection="{Binding Source={StaticResource QaListStubs}}" />
         </CompositeCollection>
     </Controls:MetroWindow.Resources>
-    <DockPanel LastChildFill="True">
+    <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -75,11 +75,11 @@
                 <TextBlock TextWrapping="Wrap" Text="{Binding ServerStatusText}"/>
             </StatusBarItem>
         </StatusBar>
-        <Grid DockPanel.Dock="Top">
+        <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="*" MinWidth="150"/>
                 <ColumnDefinition Width="2" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" MinWidth="150"/>
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
             <DockPanel Grid.Column="0">
@@ -124,10 +124,10 @@
             </DockPanel>
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="220" />
+                    <RowDefinition Height="*" MinHeight="150"/>
                     <RowDefinition Height="5" />
-                    <RowDefinition />
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*" MinHeight="150"/>
+                    <RowDefinition Height="50" MinHeight="50"/>
                 </Grid.RowDefinitions>
                 <GroupBox Header="{Tx:T ui.preview}" VerticalAlignment="Stretch" Margin="10,10,10,10" HorizontalAlignment="Stretch" Grid.Row="0">
                     <asf:AirspacePanel FixAirspace="{Binding FixAirspace}">
