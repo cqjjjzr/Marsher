@@ -78,7 +78,7 @@
         <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="280" />
-                <ColumnDefinition Width="2" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
@@ -125,7 +125,7 @@
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="220" />
-                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition />
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
