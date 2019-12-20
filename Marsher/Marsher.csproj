@@ -127,6 +127,9 @@
     <Reference Include="MahApps.Metro.IconPacks.Material, Version=2.3.0.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.Material.2.3.0\lib\net46\MahApps.Metro.IconPacks.Material.dll</HintPath>
     </Reference>
+    <Reference Include="Markdown.Xaml, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Markdown.Xaml.1.0.0\lib\net45\Markdown.Xaml.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Data.Sqlite, Version=2.2.6.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Data.Sqlite.Core.2.2.6\lib\netstandard2.0\Microsoft.Data.Sqlite.dll</HintPath>
     </Reference>
@@ -285,6 +288,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DelayAction.cs" />
+    <Compile Include="ImportDialog.xaml.cs">
+      <DependentUpon>ImportDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImportExport.cs" />
+    <Compile Include="InputWithCheckDialog.xaml.cs">
+      <DependentUpon>InputWithCheckDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DeleteConfirmDialog.xaml.cs">
       <DependentUpon>DeleteConfirmDialog.xaml</DependentUpon>
     </Compile>
@@ -299,15 +309,27 @@
     <Compile Include="QaListView.xaml.cs">
       <DependentUpon>QaListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ReleaseNoteDisplay.xaml.cs">
+      <DependentUpon>ReleaseNoteDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ServiceLoginWindow.xaml.cs">
       <DependentUpon>ServiceLoginWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services.cs" />
     <Compile Include="ShiftWindowOntoScreenHelper.cs" />
     <Compile Include="UpdateManager.cs" />
+    <Compile Include="VirtualFileDataObject.cs" />
     <Page Include="CollectorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="InputWithCheckDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="DeleteConfirmDialog.xaml">
       <SubType>Designer</SubType>
@@ -336,6 +358,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ReleaseNoteDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -343,6 +369,10 @@
     <Page Include="Resources\IconsNonShared.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Markdown.Styles.Default.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ServiceLoginWindow.xaml">
       <SubType>Designer</SubType>
@@ -375,6 +405,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Resources\dictionary.txd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\RELEASES.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\Entypo.ttf" />

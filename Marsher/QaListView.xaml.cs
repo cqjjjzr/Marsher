@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using Delay;
 using GongSolutions.Wpf.DragDrop;
 using GongSolutions.Wpf.DragDrop.Utilities;
 using Marsher.Annotations;
+using NuGet;
 
 namespace Marsher
 {
@@ -33,20 +40,21 @@ namespace Marsher
         public static readonly DependencyProperty AllowDropExtendedProperty =
             DependencyProperty.Register("AllowDropExtended", typeof(bool), typeof(QaListView),
                 new PropertyMetadata(true, AllowDropExtendedPropertyChanged));
-        private QaListViewViewModel ViewModel { get; }
+        public QaListViewViewModel ViewModel { get; }
+        public event Action<IList, IEnumerable> OnDelete;
 
         public QaListView()
         {
             ViewModel = new QaListViewViewModel(this);
             InitializeComponent();
             GongSolutions.Wpf.DragDrop.DragDrop.SetDropHandler(this, ViewModel);
+            GongSolutions.Wpf.DragDrop.DragDrop.SetDragHandler(this, ViewModel);
             GongSolutions.Wpf.DragDrop.DragDrop.SetIsDropTarget(this, AllowDropExtended);
         }
 
         private static void AllowDropExtendedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (!(d is QaListView view)) return;
-            GongSolutions.Wpf.DragDrop.DragDrop.SetIsDropTarget(view, (bool) e.NewValue);
+
         }
 
         private static void AllowForeignDropPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -54,15 +62,19 @@ namespace Marsher
 
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        private void ListView_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
-
+            if (e.Key == Key.Delete)
+            {
+                OnDelete?.Invoke(SelectedItems, ItemsSource);
+            }
         }
     }
 
-    public sealed class QaListViewViewModel: IDropTarget
+    public sealed class QaListViewViewModel: IDropTarget, IDragSource
     {
         private readonly QaListView _view;
+        public event Action<string> OnRequestingImport;
 
         public QaListViewViewModel(QaListView view)
         {
@@ -71,10 +83,30 @@ namespace Marsher
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (!CanAcceptData(dropInfo)) return;
-            dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-            dropInfo.Effects = ReferenceEquals(dropInfo.DragInfo.SourceCollection, dropInfo.TargetCollection)
-                ? DragDropEffects.Move : DragDropEffects.Copy;
+            if (CanAcceptData(dropInfo))
+            {
+                if (!_view.AllowForeignDrop)
+                    return;
+                if (!_view.AllowDropExtended)
+                    return;
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                dropInfo.Effects = ReferenceEquals(dropInfo.DragInfo.SourceCollection, dropInfo.TargetCollection)
+                    ? DragDropEffects.Move : DragDropEffects.Copy;
+                return;
+            }
+            if (CanAcceptDataForImport(dropInfo))
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+
+        private static bool CanAcceptDataForImport(IDropInfo dropInfo)
+        {
+            if (!(dropInfo.Data is DataObject dataObj)) return false;
+            if (!dataObj.ContainsFileDropList()) return false;
+            var dragFileList = dataObj.GetFileDropList().Cast<string>();
+            return dragFileList.Count() == 1;
         }
 
         private bool CanAcceptData(IDropInfo dropInfo)
@@ -91,13 +123,10 @@ namespace Marsher
                 return targetList != null;
             }
 
-            if (!(_view.AllowForeignDrop))
-                return false;
-
             if (dropInfo.TargetCollection == null)
                 return false;
 
-            if (TestCompatibleTypes(dropInfo.TargetCollection, dropInfo.Data))
+            if (TestCompatibleTypes(dropInfo.TargetCollection, dropInfo.DragInfo.Data))
             {
                 var isChildOf = IsChildOf(dropInfo.VisualTargetItem, dropInfo.DragInfo.VisualSourceItem);
                 return !isChildOf;
@@ -158,7 +187,11 @@ namespace Marsher
         public void Drop(IDropInfo dropInfo)
         {
             if (dropInfo?.DragInfo == null)
+            {
+                if (CanAcceptDataForImport(dropInfo))
+                    OnRequestingImport?.Invoke(((DataObject)dropInfo.Data).GetFileDropList()[0]);
                 return;
+            }
 
             var insertIndex = dropInfo.UnfilteredInsertIndex;
 
@@ -176,7 +209,7 @@ namespace Marsher
             }
 
             var destinationList = dropInfo.TargetCollection.TryGetList();
-            var data = ExtractData(dropInfo.Data).OfType<object>().ToList();
+            var data = ExtractData(dropInfo.DragInfo.Data).OfType<object>().ToList();
             var sourceList = dropInfo.DragInfo.SourceCollection.TryGetList();
             var selfToSelf = ReferenceEquals(sourceList, destinationList);
 
@@ -243,6 +276,83 @@ namespace Marsher
             if (!enumerable.Any()) return target is IList;
             var dataType = TypeUtilities.GetCommonBaseClass(ExtractData(data));
             return enumerable.Any(t => t.IsAssignableFrom(dataType));
+        }
+
+        public void StartDrag(IDragInfo dragInfo)
+        {
+            /*var items = TypeUtilities.CreateDynamicallyTypedList(dragInfo.SourceItems).Cast<object>().ToList();
+            if (items.Count > 1)
+            {
+                dragInfo.Data = items;
+            }
+            else
+            {
+                // special case: if the single item is an enumerable then we can not drop it as single item
+                var singleItem = items.FirstOrDefault();
+                if (singleItem is IEnumerable && !(singleItem is string))
+                {
+                    dragInfo.Data = items;
+                }
+                else
+                {
+                    dragInfo.Data = singleItem;
+                }
+            }*/
+            var items = TypeUtilities.CreateDynamicallyTypedList(dragInfo.SourceItems).Cast<QaItem>()
+                .ToList();
+            var sess = new ExportSession(items);
+            var filename = Path.Combine(Path.GetTempPath(),
+                DateTime.Now.ToString("yyyy-M-d HH_mm_ss") + ".marsher");
+            var virtualFileDataObject = new VirtualFileDataObject();
+            virtualFileDataObject.SetData(new VirtualFileDataObject.FileDescriptor[]
+            {
+                new VirtualFileDataObject.FileDescriptor
+                {
+                    Name = DateTime.Now.ToString("yyyy-M-d HH_mm_ss") + ".marsher",
+                    StreamContents = stream =>
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(sess.Json);
+                        stream.Write(bytes, 0, bytes.Length);
+                    }
+                },
+            });
+            virtualFileDataObject.SetData(
+                (short)(DataFormats.GetDataFormat(DataFormats.Text).Id),
+                Encoding.Default.GetBytes(sess.Json + "\0"));
+            dragInfo.DataObject = virtualFileDataObject;
+            dragInfo.Data = items;
+
+            dragInfo.Effects = !items.IsEmpty() ? DragDropEffects.Move | DragDropEffects.Copy : DragDropEffects.None;
+        }
+
+        /// <inheritdoc />
+        public bool CanStartDrag(IDragInfo dragInfo)
+        {
+            return true;
+        }
+
+        /// <inheritdoc />
+        public void Dropped(IDropInfo dropInfo)
+        {
+
+        }
+
+        /// <inheritdoc />
+        public void DragDropOperationFinished(DragDropEffects operationResult, IDragInfo dragInfo)
+        {
+
+        }
+
+        /// <inheritdoc />
+        public void DragCancelled()
+        {
+
+        }
+
+        /// <inheritdoc />
+        public bool TryCatchOccurredException(Exception exception)
+        {
+            return false;
         }
     }
 }
