@@ -82,7 +82,8 @@ namespace Marsher
             };
             DataContext = _viewModel;
             _database.Database.EnsureCreatedAsync();
-            _database.Items.LoadAsync();
+            //_database.Items.LoadAsync();
+            //_viewModel.LoadNextPage();
 
             QaListSelector.SelectedIndex = 0;
             //QaList.ItemsSource = _viewModel.ActiveQaList;
@@ -497,6 +498,11 @@ namespace Marsher
             _database.SaveChanges();
             _updateManager.Dispose();
         }
+
+        private void QaList_OnReachBottom()
+        {
+            _viewModel.LoadNextPage();
+        }
     }
 
     [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
@@ -532,6 +538,7 @@ namespace Marsher
                 UpdateEmptyListIndicator();
                 _activeQaItems.CollectionChanged += OnActiveListModified;
                 FireOnPropertyChanged();
+                ResetPaging();
             }
         }
 
@@ -544,6 +551,7 @@ namespace Marsher
                 _activeList = value;
                 FireOnPropertyChanged();
                 UpdateActiveListEditable();
+                ResetPaging();
             }
         }
 
@@ -663,6 +671,38 @@ namespace Marsher
 
         public PackIconMaterialKind MarshmallowStatus { get; set; } = PackIconMaterialKind.HelpCircleOutline;
         public PackIconMaterialKind PeingStatus { get; set; } = PackIconMaterialKind.HelpCircleOutline;
+
+        #endregion
+
+        #region Lazy Loading
+
+        private int _pageIndex = 0;
+        private bool _isLastPage = false;
+        private const int PageSize = 10;
+
+        private void ResetPaging()
+        {
+            _pageIndex = 0;
+            _isLastPage = false;
+            LoadNextPage();
+        }
+
+        public void LoadNextPage()
+        {
+            if (_isLastPage) return;
+            var qaItems = _dataContext.Items.Skip(PageSize * (_pageIndex)).Take(PageSize).ToArray();
+            if (qaItems.Length == 0)
+            {
+                _isLastPage = true;
+                return;
+            }
+            foreach (QaItem qaItem in qaItems)
+            {
+                if (_activeQaItems.Where((item, i) => item.Id == qaItem.Id).Any()) continue;
+                _activeQaItems.Add(qaItem);
+            }
+            _pageIndex++;
+        }
 
         #endregion
 

@@ -42,6 +42,7 @@ namespace Marsher
                 new PropertyMetadata(true, AllowDropExtendedPropertyChanged));
         public QaListViewViewModel ViewModel { get; }
         public event Action<IList, IEnumerable> OnDelete;
+        public event Action ReachBottom;
 
         public QaListView()
         {
@@ -68,6 +69,12 @@ namespace Marsher
             {
                 OnDelete?.Invoke(SelectedItems, ItemsSource);
             }
+        }
+
+        private void QaListView_OnScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (Math.Abs(e.VerticalOffset - e.ExtentHeight) < 10)
+                ReachBottom?.Invoke();
         }
     }
 
