@@ -34,13 +34,13 @@ namespace Marsher
     {
         private readonly MarsherUpdateManager _updateManager;
 
-        private readonly MainViewModel _viewModel;
+        private MainViewModel _viewModel;
 
-        private readonly MarshmallowService _marshmallowService;
-        private readonly PeingService _peingService;
+        private MarshmallowService _marshmallowService;
+        private PeingService _peingService;
         private readonly QaDataContext _database = new QaDataContext();
-        private readonly LocalListPersistence _localListPersistence;
-        private readonly DisplayCommunication _displayCommunication;
+        private LocalListPersistence _localListPersistence;
+        private DisplayCommunication _displayCommunication;
 
         private readonly DelayAction _saveDatabaseAction = new DelayAction();
         private readonly DelayAction _saveListAction = new DelayAction();
@@ -75,14 +75,18 @@ namespace Marsher
             }
 
             InitializeComponent();
+        }
+
+        private async void MetroWindow_OnContentRendered(object s, EventArgs e)
+        {
             _localListPersistence = new LocalListPersistence();
             _viewModel = new MainViewModel(_database, _localListPersistence, DialogCoordinator.Instance)
             {
                 Version = "v" + _updateManager.GetCurrentVersion()
             };
             DataContext = _viewModel;
-            _database.Database.EnsureCreatedAsync();
-            _database.Items.LoadAsync();
+            await _database.Database.EnsureCreatedAsync();
+            await _database.Items.LoadAsync();
 
             QaListSelector.SelectedIndex = 0;
             //QaList.ItemsSource = _viewModel.ActiveQaList;
@@ -176,26 +180,18 @@ namespace Marsher
 
             QaList.OnDelete += OnDelete;
             QaList.ViewModel.OnRequestingImport += OnRequestingImport;
-        }
 
-        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
-        {
             if (!_updateManager.Updated) return;
-            Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(t =>
-            {
-                var notes = File.ReadAllText(System.IO.Path.Combine(
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location ??
-                                                    "Marsher.exe"), "Resources", "RELEASES.md"));
-                Dispatcher?.Invoke(() =>
-                {
-                    var relNoteDisplay = new ReleaseNoteDisplay(notes);
-                    relNoteDisplay.Show();
-                    relNoteDisplay.Focus();
-                });
-            });
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            var notes = File.ReadAllText(System.IO.Path.Combine(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location ??
+                                                "Marsher.exe"), "Resources", "RELEASES.md"));
+            var relNoteDisplay = new ReleaseNoteDisplay(notes);
+            relNoteDisplay.Show();
+            relNoteDisplay.Focus();
         }
-
+        
         #region Login
 
         private void LoginCommand_Click(object sender, RoutedEventArgs e)

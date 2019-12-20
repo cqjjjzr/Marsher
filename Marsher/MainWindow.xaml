@@ -15,7 +15,7 @@
         Title="Marsher" Height="530" Width="800"
 
         Dialog:DialogParticipation.Register="{Binding}"
-        GlowBrush="{DynamicResource AccentColorBrush}" Loaded="MetroWindow_Loaded" d:DataContext="{d:DesignInstance local:MainViewModel}" Closing="MetroWindow_Closing" Icon="Resources/Icons/Logo.ico">
+        GlowBrush="{DynamicResource AccentColorBrush}" ContentRendered="MetroWindow_OnContentRendered" d:DataContext="{d:DesignInstance local:MainViewModel}" Closing="MetroWindow_Closing" Icon="Resources/Icons/Logo.ico">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
             <Button Content="{Binding Version}" IsEnabled="False" Foreground="Black"></Button>
