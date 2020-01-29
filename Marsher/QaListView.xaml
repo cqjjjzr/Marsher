@@ -12,7 +12,8 @@
              VirtualizingPanel.IsVirtualizing="True"
 
              dd:DragDrop.IsDragSource="True"
-             AllowDrop="True" KeyUp="ListView_KeyUp">
+             AllowDrop="True" KeyUp="ListView_KeyUp"
+             ScrollViewer.ScrollChanged="QaListView_OnScrollChanged">
     <ListView.Resources>
         <local:QaIconConverter x:Uid="local:QaIconConverter_1" x:Key="QaIconConverter" />
     </ListView.Resources>

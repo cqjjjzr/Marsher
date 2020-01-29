@@ -82,7 +82,8 @@ namespace Marsher
             };
             DataContext = _viewModel;
             _database.Database.EnsureCreatedAsync();
-            _database.Items.LoadAsync();
+            //_database.Items.LoadAsync();
+            //_viewModel.LoadNextPage();
 
             QaListSelector.SelectedIndex = 0;
             //QaList.ItemsSource = _viewModel.ActiveQaList;
@@ -106,25 +107,6 @@ namespace Marsher
                         _viewModel.StatusText = T("status.logged_in.marshmallow");
                     else if (status == ServiceStatus.NotLoggedIn) _viewModel.StatusText = T("status.dropped.marshmallow");
                 });
-
-            _viewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName != nameof(_viewModel.ActiveQaList)) return;
-                var list = _viewModel.ActiveQaList;
-                switch (list)
-                {
-                    case QaListStubsViewModel stubs:
-                        _viewModel.ActiveQaItems = stubs.PopulatedItems;
-                        break;
-                    case QaList qaList:
-                        var coll2 = new ObservableCollection<QaItem>(qaList.Items);
-                        _viewModel.ActiveQaItems = coll2;
-                        break;
-                    case QaListObservable qaListObservable:
-                        _viewModel.ActiveQaItems = qaListObservable.Items;
-                        break;
-                }
-            };
 
             foreach (var stubs in _localListPersistence.GetAllStubs())
             {
@@ -497,6 +479,11 @@ namespace Marsher
             _database.SaveChanges();
             _updateManager.Dispose();
         }
+
+        private void QaList_OnReachBottom()
+        {
+            _viewModel.LoadNextPage(null);
+        }
     }
 
     [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
@@ -527,8 +514,9 @@ namespace Marsher
             {
                 if (_activeQaItems != null)
                     _activeQaItems.CollectionChanged -= OnActiveListModified;
-                _activeQaItems = value;
+                //_activeQaItems = value;
 
+                ResetPaging(value);
                 UpdateEmptyListIndicator();
                 _activeQaItems.CollectionChanged += OnActiveListModified;
                 FireOnPropertyChanged();
@@ -543,6 +531,22 @@ namespace Marsher
             {
                 _activeList = value;
                 FireOnPropertyChanged();
+                switch (value)
+                {
+                    case QaListStubsViewModel stubs:
+                        _listType = QaItemsListType.Populated;
+                        ActiveQaItems = stubs.PopulatedItems;
+                        break;
+                    case QaList qaList:
+                        _listType = QaItemsListType.Memory;
+                        ActiveQaItems = new ObservableCollection<QaItem>(qaList.Items);
+                        break;
+                    case QaListObservable qaListObservable:
+                        _listType = QaItemsListType.Database;
+                        ActiveQaItems = qaListObservable.Items;
+                        break;
+                }
+
                 UpdateActiveListEditable();
             }
         }
@@ -666,6 +670,54 @@ namespace Marsher
 
         #endregion
 
+        #region Lazy Loading
+
+        private int _pageIndex = 0;
+        private QaItemsListType _listType = QaItemsListType.Database;
+        private bool _isLastPage = false;
+        private const int PageSize = 10;
+
+        private void ResetPaging(ObservableCollection<QaItem> items)
+        {
+            _pageIndex = 0;
+            _isLastPage = false;
+            _activeQaItems = new ObservableCollection<QaItem>();
+            LoadNextPage(items);
+        }
+
+        public void LoadNextPage(ObservableCollection<QaItem> items)
+        {
+            if (_isLastPage) return;
+
+            if (_listType == QaItemsListType.Database)
+            {
+                var qaItems = _dataContext.Items.Skip(PageSize * (_pageIndex)).Take(PageSize).ToArray();
+                if (qaItems.Length == 0)
+                {
+                    _isLastPage = true;
+                    return;
+                }
+                foreach (QaItem qaItem in qaItems)
+                {
+                    if (_activeQaItems.Where((item, i) => item.Id == qaItem.Id).Any()) continue;
+                    _activeQaItems.Add(qaItem);
+                }
+                _pageIndex++;
+            }
+            else
+            {
+                if (items != null)
+                    foreach (QaItem qaItem in items)
+                    {
+                        if (_activeQaItems.Where((item, i) => item.Id == qaItem.Id).Any()) continue;
+                        _activeQaItems.Add(qaItem);
+                    }
+                _isLastPage = true;
+            }
+        }
+
+        #endregion
+
         public MainViewModel(QaDataContext dbContext, LocalListPersistence persistence, IDialogCoordinator dialogCoordinator)
         {
             _dataContext = dbContext;
@@ -674,7 +726,7 @@ namespace Marsher
 
             AllQaItemsList = new QaListObservable()
                 {Name = T("ui.list_all"), Items = localDbSet };
-            ActiveQaItems = localDbSet;
+            //ActiveQaItems = localDbSet;
             AllQaItemsHolder.Add(AllQaItemsList);
             ActiveQaList = AllQaItemsList;
 
@@ -920,5 +972,12 @@ namespace Marsher
         {
             throw new NotImplementedException();
         }
+    }
+
+    public enum QaItemsListType
+    {
+        Populated = 0,
+        Memory = 1,
+        Database = 2
     }
 }

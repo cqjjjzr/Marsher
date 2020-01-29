@@ -38,7 +38,7 @@ namespace Marsher
             var connectionString = new SqliteConnectionStringBuilder { DataSource = MarsherFilesystem.GetPath("database.sqlite3") }.ConnectionString;
             var connection = new SqliteConnection(connectionString);
 
-            optionsBuilder.UseSqlite(connection);
+            optionsBuilder.UseLazyLoadingProxies().UseSqlite(connection);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
