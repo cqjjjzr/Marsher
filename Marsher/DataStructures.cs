@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Marsher
 {
@@ -8,17 +9,21 @@ namespace Marsher
     public class QaItem
     {
         [Column("service", Order = 1)]
+        [JsonProperty("service")]
         [Required]
         public QaService Service { get; set; }
         [Key]
         [Required]
         [Column("id", Order = 0)]
+        [JsonProperty("id")]
         public string Id { get; set; }
         [Column("content")]
+        [JsonProperty("content")]
         [Required]
         public string Content { get; set; }
 
         [Column("translation")]
+        [JsonProperty("translation")]
         public string Translation { get; set; }
     }
 

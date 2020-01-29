@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -16,11 +17,12 @@ namespace Marsher
     {
         private CollectorViewModel _viewModel;
 
-        public CollectorWindow(QaListStubsViewModel listViewModel)
+        public CollectorWindow(QaListStubsViewModel listViewModel, Action<IList, IEnumerable> onDelete)
         {
             _viewModel = new CollectorViewModel(listViewModel);
             DataContext = _viewModel;
             InitializeComponent();
+            QaList.OnDelete += onDelete;
 
             listViewModel.Locked = true;
 

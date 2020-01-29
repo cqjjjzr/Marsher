@@ -116,7 +116,8 @@
                 </StackPanel>
                 <Grid>
                     <local:QaListView x:Name="QaList" Margin="0" ItemsSource="{Binding ActiveQaItems}" DockPanel.Dock="Bottom"
-                                      AllowDropExtended="{Binding Path=ActiveQaListEditable}" SelectedItem="{Binding ActiveQaItem, Mode=OneWayToSource}"  />
+                                      AllowDropExtended="{Binding Path=ActiveQaListEditable}" SelectedItem="{Binding ActiveQaItem, Mode=OneWayToSource}" 
+                                      ReachBottom="QaList_OnReachBottom"/>
                     <local:EmptyListIndicator PrimaryString="{Tx:T ui.list.empty}" SecondaryString="{Binding EmptyListIndicatorText}" IsHitTestVisible="False"
                                               Width="Auto" Panel.ZIndex="1" Visibility="{Binding EmptyListIndicatorVisibility}"/>
                 </Grid>
@@ -152,7 +153,7 @@
                     <Label Grid.Column="0" Grid.Row="0" Margin="4" Content="{Tx:T ui.item.id}" />
                     <TextBox x:Name="IDTextBox" Grid.Column="1" Grid.Row="0" Margin="4" IsReadOnly="True" Text="{Binding Id}"/>
                     <Label Grid.Column="0" Grid.Row="1" Margin="4" Content="{Tx:T ui.item.content}" />
-                    <TextBox x:Name="ContentTextBox" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding Content}" TextChanged="ContentTextBox_TextChanged" AcceptsReturn="True"/>
+                    <TextBox x:Name="ContentTextBox" Grid.Column="1" Grid.Row="1" Margin="4" Text="{Binding Content}" TextWrapping="Wrap" TextChanged="ContentTextBox_TextChanged" AcceptsReturn="True"/>
                 </Grid>
                 <Button x:Name="DisplayButton" Content="{Tx:T ui.item.display}" Margin="10,7,10,10" Grid.Row="3" Click="DisplayButton_Click"/>
             </Grid>

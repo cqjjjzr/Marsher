@@ -38,7 +38,7 @@ namespace Marsher
             var connectionString = new SqliteConnectionStringBuilder { DataSource = MarsherFilesystem.GetPath("database.sqlite3") }.ConnectionString;
             var connection = new SqliteConnection(connectionString);
 
-            optionsBuilder.UseSqlite(connection);
+            optionsBuilder.UseLazyLoadingProxies().UseSqlite(connection);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,7 +58,7 @@ namespace Marsher
 
         public QaItem GetItemById(string id)
         {
-            return Items.SingleOrDefault(item => item.Id == id);
+            return Items.FirstOrDefault(item => item.Id == id);
         }
     }
 
@@ -81,7 +81,7 @@ namespace Marsher
             }
         }
 
-        public QaListStubs CreateList(string name)
+        public QaListStubs CreateList(string name, IList<QaItem> initialMembers = null)
         {
             if (string.IsNullOrWhiteSpace(name)) throw new IllegalListNameException();
             if (_lists.Any(it => it.Name == name)) throw new DuplicateListNameException();
@@ -108,6 +108,8 @@ namespace Marsher
                 Filename = filename
             };
             _lists.Add(list);
+            if (initialMembers != null)
+                list.Items.AddRange(initialMembers.Select(it => it.Id));
             OnListModified?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list));
             return list;
         }
@@ -127,7 +129,7 @@ namespace Marsher
         public void UpdateList(QaListStubs stub, bool filenameChanged = false)
         {
             var filename = MarsherFilesystem.GetPath(ListDirectoryName, stub.Name + ExtensionName);
-            if (filenameChanged)
+            if (filenameChanged && stub.Filename != filename)
             {
                 if (string.IsNullOrWhiteSpace(stub.Name)) throw new IllegalListNameException();
                 if (_lists.Any(it => it.Name == stub.Name && it != stub)) throw new DuplicateListNameException();
@@ -162,6 +164,22 @@ namespace Marsher
         public IEnumerable<QaListStubs> GetAllStubs()
         {
             return _lists;
+        }
+
+        public bool CheckValidListName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return false;
+            return name.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+        }
+
+        public bool CheckDuplicateListName(string name, QaListStubs current = null)
+        {
+            if (_lists.Any(it => it.Name == name && !ReferenceEquals(it, current))) return true;
+            if (current != null) return false;
+            var filename = MarsherFilesystem.GetPath(ListDirectoryName, name + ExtensionName);
+            if (!File.Exists(filename)) return false;
+            LoadList(filename);
+            return true;
         }
 
         public event NotifyCollectionChangedEventHandler OnListModified;
