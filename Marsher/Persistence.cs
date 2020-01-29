@@ -58,7 +58,7 @@ namespace Marsher
 
         public QaItem GetItemById(string id)
         {
-            return Items.SingleOrDefault(item => item.Id == id);
+            return Items.FirstOrDefault(item => item.Id == id);
         }
     }
 
